@@ -14,7 +14,7 @@ export function CitizenScoreBadge({
 
   return (
     <span
-      className={`inline-flex items-center rounded-full bg-gradient-to-r from-blue-900/50 to-purple-900/50 border border-blue-800/50 text-blue-300 ${sizeClasses}`}
+      className={`inline-flex items-center rounded-full bg-gradient-to-r from-emerald-900/40 to-teal-900/40 border border-emerald-700/50 text-emerald-300 ${sizeClasses}`}
     >
       {score} pts
     </span>
