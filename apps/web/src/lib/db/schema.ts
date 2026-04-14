@@ -35,6 +35,7 @@ export const problems = pgTable(
     title: text("title").notNull(),
     description: text("description").notNull(),
     category: text("category").notNull(),
+    repoUrl: text("repo_url"),
     tags: text("tags").array().default([]),
     createdBy: uuid("created_by")
       .notNull()

@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 const mockGetCurrentCitizen = vi.fn();
 const mockCreateProblem = vi.fn();
 const mockRedirect = vi.fn();
+const mockVerifyRepoExists = vi.fn();
 
 vi.mock("@/lib/auth/get-citizen", () => ({
   getCurrentCitizen: () => mockGetCurrentCitizen(),
@@ -16,6 +17,13 @@ vi.mock("next/navigation", () => ({
     throw new Error("NEXT_REDIRECT");
   },
 }));
+vi.mock("@/lib/github/validate-repo", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/lib/github/validate-repo")>();
+  return {
+    ...actual,
+    verifyRepoExists: (...args: unknown[]) => mockVerifyRepoExists(...args),
+  };
+});
 
 import { createProblemAction } from "./actions";
 
@@ -31,6 +39,7 @@ const citizen = { id: "citizen-1", username: "testuser" };
 
 beforeEach(() => {
   vi.clearAllMocks();
+  mockVerifyRepoExists.mockResolvedValue(true);
 });
 
 describe("createProblemAction", () => {
@@ -43,6 +52,7 @@ describe("createProblemAction", () => {
         title: "Test Problem",
         description: "A valid description here",
         category: "climate",
+        repoUrl: "https://github.com/owner/repo",
       })
     );
 
@@ -58,6 +68,7 @@ describe("createProblemAction", () => {
         title: "ab",
         description: "A valid description here",
         category: "climate",
+        repoUrl: "https://github.com/owner/repo",
       })
     );
 
@@ -73,6 +84,7 @@ describe("createProblemAction", () => {
         title: "Valid Title",
         description: "A valid description here",
         category: "invalid_category",
+        repoUrl: "https://github.com/owner/repo",
       })
     );
 
@@ -90,6 +102,7 @@ describe("createProblemAction", () => {
           title: "Clean Water Initiative",
           description: "A project to provide clean water access",
           category: "clean_water",
+          repoUrl: "https://github.com/owner/clean-water",
           tags: "water, purification, access",
         })
       )
@@ -100,6 +113,7 @@ describe("createProblemAction", () => {
         title: "Clean Water Initiative",
         description: "A project to provide clean water access",
         category: "clean_water",
+        repoUrl: "https://github.com/owner/clean-water",
         tags: ["water", "purification", "access"],
         createdBy: "citizen-1",
       })
@@ -118,6 +132,7 @@ describe("createProblemAction", () => {
           title: "Education Platform",
           description: "A platform for education access",
           category: "education",
+          repoUrl: "https://github.com/owner/edu-platform",
           tags: "",
         })
       )

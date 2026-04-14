@@ -78,7 +78,6 @@ export default async function ProblemsPage({
               title={problem.title}
               description={problem.description}
               category={problem.category}
-              verified={problem.verified}
               createdBy={problem.createdBy}
             />
           ))}
