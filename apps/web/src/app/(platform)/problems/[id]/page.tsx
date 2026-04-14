@@ -28,6 +28,17 @@ export default async function ProblemDetailPage({
         {problem.description}
       </p>
 
+      {problem.repoUrl && (
+        <a
+          href={problem.repoUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 text-sm text-citizen-sand hover:text-citizen-text"
+        >
+          {problem.repoUrl}
+        </a>
+      )}
+
       {problem.createdBy && (
         <p className="text-sm text-citizen-text-dim">
           Created by{" "}
@@ -89,9 +100,8 @@ export default async function ProblemDetailPage({
       </div>
 
       <div className="space-y-4">
-        <div className="flex items-start justify-between gap-4">
+        <div>
           <h1 className="text-3xl font-bold">{problem.title}</h1>
-          {problem.verified && <Badge variant="success">Verified</Badge>}
         </div>
 
         <div className="flex items-center gap-3">
