@@ -17,15 +17,6 @@ export function Hero() {
         }}
       />
 
-      {/* Topographic line pattern overlay */}
-      <div
-        className="absolute inset-0 opacity-[0.035]"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='400' height='400' viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23f0ece4' stroke-width='1'%3E%3Cellipse cx='200' cy='200' rx='180' ry='120'/%3E%3Cellipse cx='200' cy='200' rx='140' ry='90'/%3E%3Cellipse cx='200' cy='200' rx='100' ry='60'/%3E%3Cellipse cx='200' cy='200' rx='60' ry='35'/%3E%3Cellipse cx='200' cy='200' rx='25' ry='15'/%3E%3C/g%3E%3C/svg%3E")`,
-          backgroundSize: "400px 400px",
-        }}
-      />
-
       <div className="relative mx-auto grid max-w-7xl gap-8 px-4 pb-16 pt-20 sm:pb-20 sm:pt-28 lg:grid-cols-12 lg:pt-36">
         {/* Text content, offset left */}
         <div className="lg:col-span-7">
@@ -60,6 +51,12 @@ export function Hero() {
             <div className="absolute inset-4 rounded-full border border-citizen-accent/20" />
             <div className="absolute inset-12 rounded-full border border-citizen-warm/20" />
             <div className="absolute inset-20 rounded-full bg-gradient-to-br from-citizen-accent/5 to-citizen-warm/5" />
+            {/* Orbiting dot on middle ring */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="animate-orbit">
+                <div className="h-2.5 w-2.5 rounded-full bg-citizen-warm shadow-[0_0_8px_rgba(232,148,90,0.6)]" />
+              </div>
+            </div>
           </div>
         </div>
       </div>

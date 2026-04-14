@@ -47,6 +47,12 @@ const config: Config = {
           "0%": { opacity: "0", transform: "scale(0.95)" },
           "100%": { opacity: "1", transform: "scale(1)" },
         },
+        orbit: {
+          "0%": { transform: "rotate(0deg) translateX(80px) rotate(0deg)" },
+          "100%": {
+            transform: "rotate(360deg) translateX(80px) rotate(-360deg)",
+          },
+        },
       },
       animation: {
         "fade-up": "fade-up 0.6s ease-out both",
@@ -56,6 +62,7 @@ const config: Config = {
         "slide-in-left": "slide-in-left 0.6s ease-out both",
         "gradient-shift": "gradient-shift 15s ease infinite",
         "scale-in": "scale-in 0.5s ease-out both",
+        orbit: "orbit 8s linear infinite",
       },
     },
   },
