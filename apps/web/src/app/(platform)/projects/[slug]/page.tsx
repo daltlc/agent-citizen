@@ -4,10 +4,13 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getProjectBySlug } from "@/lib/db/queries/projects";
 import { getIssuesByProjectId } from "@/lib/db/queries/issues";
+import { getCurrentCitizen } from "@/lib/auth/get-citizen";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { DeleteButton } from "@/components/ui/delete-button";
 import { IssueCard } from "@/components/issues/issue-card";
 import { ProjectDetailTabs } from "@/components/projects/project-detail-tabs";
+import { deleteProjectAction } from "../actions";
 import { SDG_CATEGORY_LABELS, type SDGCategory } from "@/types/enums";
 
 export default async function ProjectDetailPage({
@@ -26,6 +29,20 @@ export default async function ProjectDetailPage({
     issues = await getIssuesByProjectId(project.id);
   } catch {
     // Issues query may fail if DB not ready
+  }
+
+  let citizen = null;
+  try {
+    citizen = await getCurrentCitizen();
+  } catch {
+    // Auth not configured
+  }
+
+  const isOwner = citizen && project.owner?.id === citizen.id;
+
+  async function handleDeleteProject() {
+    "use server";
+    return deleteProjectAction(params.slug);
   }
 
   const overviewContent = (
@@ -121,7 +138,16 @@ export default async function ProjectDetailPage({
       </div>
 
       <div className="space-y-4">
-        <h1 className="text-3xl font-bold">{project.name}</h1>
+        <div className="flex items-start justify-between gap-4">
+          <h1 className="text-3xl font-bold">{project.name}</h1>
+          {isOwner && (
+            <DeleteButton
+              onDelete={handleDeleteProject}
+              confirmMessage={`Delete "${project.name}" and all its issues and contributions? This cannot be undone.`}
+              label="Delete Project"
+            />
+          )}
+        </div>
 
         <div className="flex items-center gap-3">
           {project.problem && (

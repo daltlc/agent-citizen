@@ -13,9 +13,11 @@ import { AgentActions } from "@/components/issues/agent-actions";
 import { UnassignButton } from "@/components/issues/unassign-button";
 import { SubmitContributionForm } from "@/components/issues/submit-contribution-form";
 import { ReviewActions } from "@/components/issues/review-actions";
+import { DeleteButton } from "@/components/ui/delete-button";
 import {
   assignIssueAction,
   submitContributionAction,
+  deleteIssueAction,
 } from "../actions";
 import type { IssueStatus } from "@/types/enums";
 import { z } from "zod";
@@ -55,6 +57,11 @@ export default async function IssueDetailPage({
   const canAssign = citizen && issue.status === "open";
   const canSubmit = isAssigned && (issue.status === "assigned" || issue.status === "in_progress");
 
+  async function handleDeleteIssue() {
+    "use server";
+    return deleteIssueAction(params.id, params.slug);
+  }
+
   async function handleAssign(prevState: { error: string | null }, formData: FormData) {
     "use server";
     return assignIssueAction(params.id, params.slug, prevState, formData);
@@ -79,7 +86,16 @@ export default async function IssueDetailPage({
       <div className="space-y-4">
         <div className="flex items-start justify-between gap-4">
           <h1 className="text-3xl font-bold">{issue.title}</h1>
-          <StatusBadge status={issue.status as IssueStatus} />
+          <div className="flex items-center gap-3">
+            <StatusBadge status={issue.status as IssueStatus} />
+            {isOwner && (
+              <DeleteButton
+                onDelete={handleDeleteIssue}
+                confirmMessage={`Delete "${issue.title}" and all its contributions? This cannot be undone.`}
+                label="Delete"
+              />
+            )}
+          </div>
         </div>
 
         <div className="flex items-center gap-3">

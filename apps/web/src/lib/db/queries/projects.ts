@@ -1,5 +1,12 @@
 import { db } from "@/lib/db";
-import { projects, problems, citizens } from "@/lib/db/schema";
+import {
+  projects,
+  problems,
+  citizens,
+  issues,
+  contributions,
+  applications,
+} from "@/lib/db/schema";
 import { eq, desc, and } from "drizzle-orm";
 
 export async function getProjects(category?: string) {
@@ -143,4 +150,15 @@ export async function generateUniqueSlug(name: string): Promise<string> {
 
   const suffix = Math.random().toString(36).slice(2, 6);
   return `${base}-${suffix}`;
+}
+
+export async function deleteProject(projectId: string) {
+  await db.delete(contributions).where(eq(contributions.projectId, projectId));
+  await db.delete(applications).where(eq(applications.projectId, projectId));
+  await db.delete(issues).where(eq(issues.projectId, projectId));
+  const [deleted] = await db
+    .delete(projects)
+    .where(eq(projects.id, projectId))
+    .returning();
+  return deleted;
 }

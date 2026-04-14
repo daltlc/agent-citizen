@@ -7,6 +7,7 @@ const mockCreateIssue = vi.fn();
 const mockAssignIssue = vi.fn();
 const mockUnassignIssue = vi.fn();
 const mockUpdateIssueStatus = vi.fn();
+const mockDeleteIssue = vi.fn();
 const mockCreateContribution = vi.fn();
 const mockUpdateContributionStatus = vi.fn();
 const mockRecalculateCitizenScore = vi.fn();
@@ -26,6 +27,7 @@ vi.mock("@/lib/db/queries/issues", () => ({
   unassignIssue: (...args: unknown[]) => mockUnassignIssue(...args),
   getIssueById: (...args: unknown[]) => mockGetIssueById(...args),
   updateIssueStatus: (...args: unknown[]) => mockUpdateIssueStatus(...args),
+  deleteIssue: (...args: unknown[]) => mockDeleteIssue(...args),
 }));
 vi.mock("@/lib/db/queries/contributions", () => ({
   createContribution: (...args: unknown[]) => mockCreateContribution(...args),
@@ -55,6 +57,7 @@ import {
   unassignIssueAction,
   submitContributionAction,
   reviewContributionAction,
+  deleteIssueAction,
 } from "./actions";
 
 function makeFormData(data: Record<string, string>): FormData {
@@ -577,5 +580,65 @@ describe("reviewContributionAction", () => {
       "https://github.com/org/repo/pull/1",
       expect.stringContaining("Rejected on Agent Citizen")
     );
+  });
+});
+
+describe("deleteIssueAction", () => {
+  const project = {
+    id: "project-1",
+    name: "Test Project",
+    slug: "test-project",
+    owner: { id: "owner-1", username: "owner", avatarUrl: null },
+  };
+
+  const issue = {
+    id: "issue-1",
+    projectId: "project-1",
+    title: "Test Issue",
+    status: "open",
+    createdBy: "owner-1",
+    assignedTo: null,
+  };
+
+  it("returns error when not signed in", async () => {
+    mockGetCurrentCitizen.mockResolvedValue(null);
+    const result = await deleteIssueAction("issue-1", "test-project");
+    expect(result.error).toBe("Must be signed in");
+  });
+
+  it("returns error when project not found", async () => {
+    mockGetCurrentCitizen.mockResolvedValue(owner);
+    mockGetProjectBySlug.mockResolvedValue(null);
+    const result = await deleteIssueAction("issue-1", "nonexistent");
+    expect(result.error).toBe("Project not found");
+  });
+
+  it("returns error when user is not the project owner", async () => {
+    mockGetCurrentCitizen.mockResolvedValue(citizen);
+    mockGetProjectBySlug.mockResolvedValue(project);
+    const result = await deleteIssueAction("issue-1", "test-project");
+    expect(result.error).toBe("Only the project owner can delete issues");
+  });
+
+  it("returns error when issue not found", async () => {
+    mockGetCurrentCitizen.mockResolvedValue(owner);
+    mockGetProjectBySlug.mockResolvedValue(project);
+    mockGetIssueById.mockResolvedValue(null);
+    const result = await deleteIssueAction("issue-1", "test-project");
+    expect(result.error).toBe("Issue not found");
+  });
+
+  it("deletes issue and redirects to project page", async () => {
+    mockGetCurrentCitizen.mockResolvedValue(owner);
+    mockGetProjectBySlug.mockResolvedValue(project);
+    mockGetIssueById.mockResolvedValue(issue);
+    mockDeleteIssue.mockResolvedValue(issue);
+
+    await expect(
+      deleteIssueAction("issue-1", "test-project")
+    ).rejects.toThrow("NEXT_REDIRECT");
+
+    expect(mockDeleteIssue).toHaveBeenCalledWith("issue-1");
+    expect(mockRedirect).toHaveBeenCalledWith("/projects/test-project");
   });
 });

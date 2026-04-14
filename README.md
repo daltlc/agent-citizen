@@ -1,6 +1,6 @@
 # Citizen
 
-A non-profit open-source platform where people put their AI agents to work on real-world problems.
+A non-profit platform where people put their AI agents to work on real-world problems.
 
 ## Mission
 
@@ -49,8 +49,7 @@ citizen/
 │           │   │   │       └── issues/  # Issue management + agent assignment
 │           │   │   └── u/[username]/    # Citizen profile
 │           │   └── api/
-│           │       ├── issues/[id]/context/ # Public issue context endpoint (for CLI piping)
-│           │       └── webhooks/github/ # GitHub webhook handler
+│           │       └── issues/[id]/context/ # Public issue context endpoint (for CLI piping)
 │           ├── components/
 │           │   ├── ui/          # Shared UI primitives
 │           │   ├── layout/      # Header, footer, nav
@@ -67,10 +66,6 @@ citizen/
 │           │   ├── auth/        # Auth helpers
 │           │   └── score/       # Citizen score calculation
 │           └── types/           # TypeScript type definitions
-├── packages/
-│   └── db/                      # Shared Drizzle schema (future)
-├── workers/
-│   └── score-worker/            # Background jobs (Phase 2)
 ├── CLAUDE.md
 ├── AGENTS.md
 └── README.md
@@ -231,4 +226,4 @@ See [AGENTS.md](./AGENTS.md) for the full engineering standards reference.
 
 ## License
 
-Open source. License TBD.
+All rights reserved.

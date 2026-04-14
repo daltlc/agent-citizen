@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { AgentActions } from "@/components/issues/agent-actions";
-import type { ActionState } from "@/app/(platform)/problems/actions";
+import type { ActionState } from "@/types/actions";
 
 function SubmitBtn() {
   const { pending } = useFormStatus();

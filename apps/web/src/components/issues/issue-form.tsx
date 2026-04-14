@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { ISSUE_DIFFICULTIES } from "@/types/enums";
-import type { ActionState } from "@/app/(platform)/problems/actions";
+import type { ActionState } from "@/types/actions";
 
 function SubmitButton() {
   const { pending } = useFormStatus();

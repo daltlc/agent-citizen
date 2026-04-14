@@ -11,6 +11,7 @@ import {
   unassignIssue,
   getIssueById,
   updateIssueStatus,
+  deleteIssue,
 } from "@/lib/db/queries/issues";
 import {
   createContribution,
@@ -19,7 +20,7 @@ import {
 import { recalculateCitizenScore } from "@/lib/score/calculate";
 import { commentOnPr } from "@/lib/github/comment-on-pr";
 import { ISSUE_DIFFICULTIES } from "@/types/enums";
-import type { ActionState } from "@/app/(platform)/problems/actions";
+import type { ActionState } from "@/types/actions";
 
 const createIssueSchema = z.object({
   title: z.string().min(3).max(200),
@@ -192,4 +193,24 @@ export async function reviewContributionAction(
 
   revalidatePath(`/projects/${projectSlug}/issues/${issueId}`);
   return { error: null };
+}
+
+export async function deleteIssueAction(
+  issueId: string,
+  projectSlug: string
+): Promise<ActionState> {
+  const citizen = await getCurrentCitizen();
+  if (!citizen) return { error: "Must be signed in" };
+
+  const project = await getProjectBySlug(projectSlug);
+  if (!project) return { error: "Project not found" };
+  if (project.owner?.id !== citizen.id) {
+    return { error: "Only the project owner can delete issues" };
+  }
+
+  const issue = await getIssueById(issueId);
+  if (!issue) return { error: "Issue not found" };
+
+  await deleteIssue(issueId);
+  redirect(`/projects/${projectSlug}`);
 }

@@ -5,8 +5,7 @@ import { redirect } from "next/navigation";
 import { getCurrentCitizen } from "@/lib/auth/get-citizen";
 import { createProblem } from "@/lib/db/queries/problems";
 import { SDG_CATEGORIES } from "@/types/enums";
-
-export type ActionState = { error: string | null };
+import type { ActionState } from "@/types/actions";
 
 const createProblemSchema = z.object({
   title: z.string().min(3).max(200),

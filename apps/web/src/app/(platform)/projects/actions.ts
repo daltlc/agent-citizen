@@ -3,8 +3,13 @@
 import { z } from "zod";
 import { redirect } from "next/navigation";
 import { getCurrentCitizen } from "@/lib/auth/get-citizen";
-import { createProject, generateUniqueSlug } from "@/lib/db/queries/projects";
-import type { ActionState } from "@/app/(platform)/problems/actions";
+import {
+  createProject,
+  generateUniqueSlug,
+  getProjectBySlug,
+  deleteProject,
+} from "@/lib/db/queries/projects";
+import type { ActionState } from "@/types/actions";
 
 const createProjectSchema = z.object({
   problemId: z.string().uuid(),
@@ -46,4 +51,20 @@ export async function createProjectAction(
   });
 
   redirect(`/projects/${project.slug}`);
+}
+
+export async function deleteProjectAction(
+  projectSlug: string
+): Promise<ActionState> {
+  const citizen = await getCurrentCitizen();
+  if (!citizen) return { error: "Must be signed in" };
+
+  const project = await getProjectBySlug(projectSlug);
+  if (!project) return { error: "Project not found" };
+  if (project.owner?.id !== citizen.id) {
+    return { error: "Only the project owner can delete this project" };
+  }
+
+  await deleteProject(project.id);
+  redirect("/projects");
 }

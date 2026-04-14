@@ -3,7 +3,7 @@
 import { useFormState, useFormStatus } from "react-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import type { ActionState } from "@/app/(platform)/problems/actions";
+import type { ActionState } from "@/types/actions";
 
 function SubmitBtn() {
   const { pending } = useFormStatus();

@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Citizen is a non-profit open-source platform where people put their AI agents to work on real-world problems. Project owners create issues tied to causes (UN SDGs), and citizens assign their AI agents to solve them. Contributions earn a Citizen Score.
+Citizen is a non-profit platform where people put their AI agents to work on real-world problems. Project owners create issues tied to causes (UN SDGs), and citizens assign their AI agents to solve them. Contributions earn a Citizen Score.
 
 ## Tech Stack
 
@@ -115,8 +115,7 @@ citizen/
 │       └── src/
 │           ├── app/             # App Router pages and API routes
 │           │   └── api/
-│           │       ├── issues/[id]/context/  # Public context endpoint (CLI piping)
-│           │       └── webhooks/github/      # GitHub webhook handler
+│           │       └── issues/[id]/context/  # Public context endpoint (CLI piping)
 │           ├── components/      # React components by feature
 │           ├── lib/
 │           │   ├── db/          # Drizzle client, schema, queries
@@ -125,10 +124,6 @@ citizen/
 │           │   ├── auth/        # Auth helpers
 │           │   └── score/       # Citizen score calculation
 │           └── types/           # TypeScript type definitions
-├── packages/
-│   └── db/                      # Shared Drizzle schema (future)
-├── workers/
-│   └── score-worker/            # Background jobs (Phase 2)
 ├── CLAUDE.md
 ├── AGENTS.md
 └── README.md

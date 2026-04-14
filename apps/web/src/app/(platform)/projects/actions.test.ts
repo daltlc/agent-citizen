@@ -3,6 +3,8 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 const mockGetCurrentCitizen = vi.fn();
 const mockCreateProject = vi.fn();
 const mockGenerateUniqueSlug = vi.fn();
+const mockGetProjectBySlug = vi.fn();
+const mockDeleteProject = vi.fn();
 const mockRedirect = vi.fn();
 
 vi.mock("@/lib/auth/get-citizen", () => ({
@@ -11,6 +13,8 @@ vi.mock("@/lib/auth/get-citizen", () => ({
 vi.mock("@/lib/db/queries/projects", () => ({
   createProject: (...args: unknown[]) => mockCreateProject(...args),
   generateUniqueSlug: (...args: unknown[]) => mockGenerateUniqueSlug(...args),
+  getProjectBySlug: (...args: unknown[]) => mockGetProjectBySlug(...args),
+  deleteProject: (...args: unknown[]) => mockDeleteProject(...args),
 }));
 vi.mock("next/navigation", () => ({
   redirect: (...args: unknown[]) => {
@@ -19,7 +23,7 @@ vi.mock("next/navigation", () => ({
   },
 }));
 
-import { createProjectAction } from "./actions";
+import { createProjectAction, deleteProjectAction } from "./actions";
 
 function makeFormData(data: Record<string, string>): FormData {
   const fd = new FormData();
@@ -95,5 +99,44 @@ describe("createProjectAction", () => {
       })
     );
     expect(mockRedirect).toHaveBeenCalledWith("/projects/test-project");
+  });
+});
+
+describe("deleteProjectAction", () => {
+  const project = {
+    id: "project-1",
+    name: "Test Project",
+    slug: "test-project",
+    owner: { id: "citizen-1", username: "testuser", avatarUrl: null },
+  };
+
+  it("returns error when not signed in", async () => {
+    mockGetCurrentCitizen.mockResolvedValue(null);
+    const result = await deleteProjectAction("test-project");
+    expect(result.error).toBe("Must be signed in");
+  });
+
+  it("returns error when project not found", async () => {
+    mockGetCurrentCitizen.mockResolvedValue(citizen);
+    mockGetProjectBySlug.mockResolvedValue(null);
+    const result = await deleteProjectAction("nonexistent");
+    expect(result.error).toBe("Project not found");
+  });
+
+  it("returns error when user is not the owner", async () => {
+    mockGetCurrentCitizen.mockResolvedValue({ id: "other-citizen", username: "other" });
+    mockGetProjectBySlug.mockResolvedValue(project);
+    const result = await deleteProjectAction("test-project");
+    expect(result.error).toBe("Only the project owner can delete this project");
+  });
+
+  it("deletes project and redirects to /projects", async () => {
+    mockGetCurrentCitizen.mockResolvedValue(citizen);
+    mockGetProjectBySlug.mockResolvedValue(project);
+    mockDeleteProject.mockResolvedValue(project);
+
+    await expect(deleteProjectAction("test-project")).rejects.toThrow("NEXT_REDIRECT");
+    expect(mockDeleteProject).toHaveBeenCalledWith("project-1");
+    expect(mockRedirect).toHaveBeenCalledWith("/projects");
   });
 });

@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { issues, citizens } from "@/lib/db/schema";
+import { issues, citizens, contributions } from "@/lib/db/schema";
 import { eq, desc } from "drizzle-orm";
 
 export async function getIssuesByProjectId(projectId: string) {
@@ -103,4 +103,13 @@ export async function updateIssueStatus(issueId: string, status: string) {
     .returning();
 
   return updated;
+}
+
+export async function deleteIssue(issueId: string) {
+  await db.delete(contributions).where(eq(contributions.issueId, issueId));
+  const [deleted] = await db
+    .delete(issues)
+    .where(eq(issues.id, issueId))
+    .returning();
+  return deleted;
 }
