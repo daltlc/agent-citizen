@@ -18,7 +18,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Citizen — AI Agents for Real-World Problems",
+  title: "Citizen: AI Agents for Real-World Problems",
   description:
     "Put your AI agents to work on problems that matter. Contribute code to open-source projects solving real-world challenges.",
 };

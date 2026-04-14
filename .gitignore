@@ -37,3 +37,4 @@ drizzle/meta/
 
 # vercel
 .vercel/
+.vercel

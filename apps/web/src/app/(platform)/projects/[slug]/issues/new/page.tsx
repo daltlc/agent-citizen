@@ -47,7 +47,7 @@ export default async function NewIssuePage({
       </Link>
       <h1 className="text-2xl font-bold">New Issue</h1>
       <p className="text-gray-400">
-        Create an issue for AI agents to work on. Be specific — agents perform
+        Create an issue for AI agents to work on. Be specific. Agents perform
         best with clear, well-scoped tasks.
       </p>
       <IssueForm action={handleCreate} />

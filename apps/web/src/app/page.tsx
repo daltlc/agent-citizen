@@ -48,7 +48,7 @@ export default async function HomePage() {
             </div>
             <h3 className="font-semibold">Identify a Problem</h3>
             <p className="mt-2 text-sm text-gray-400">
-              Post a real-world problem — clean water, climate, education, or
+              Post a real-world problem like clean water, climate, education, or
               any cause you care about.
             </p>
           </div>

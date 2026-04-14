@@ -113,7 +113,7 @@ ${issueDescription}
 Solve this issue and commit your changes to a new branch.`;
 
   // Cursor deep links have an 8000 char limit
-  const truncated = prompt.length > 7500 ? prompt.slice(0, 7500) + "\n\n[Description truncated — see full issue on Citizen]" : prompt;
+  const truncated = prompt.length > 7500 ? prompt.slice(0, 7500) + "\n\n[Description truncated. See full issue on Citizen]" : prompt;
 
   return `cursor://anysphere.cursor-deeplink/prompt?text=${encodeURIComponent(truncated)}`;
 }
@@ -127,13 +127,13 @@ export function AgentActions(props: AgentActionsProps) {
       await navigator.clipboard.writeText(text);
       showToast(message, "success");
     } catch {
-      showToast("Failed to copy — check clipboard permissions", "error");
+      showToast("Failed to copy. Check clipboard permissions", "error");
     }
   }
 
   function handleCopyClaudeCode() {
     const cmd = buildClaudeCodeCommand(props);
-    copyToClipboard(cmd, "Claude Code command copied — paste into your terminal");
+    copyToClipboard(cmd, "Claude Code command copied. Paste into your terminal");
   }
 
   function handleOpenInCursor() {
@@ -149,7 +149,7 @@ export function AgentActions(props: AgentActionsProps) {
   async function handleOpenInClaude() {
     try {
       await navigator.clipboard.writeText(context);
-      showToast("Context copied — paste it into Claude", "success");
+      showToast("Context copied. Paste it into Claude", "success");
     } catch {
       // Still open even if copy fails
     }
@@ -159,7 +159,7 @@ export function AgentActions(props: AgentActionsProps) {
   async function handleOpenInChatGPT() {
     try {
       await navigator.clipboard.writeText(context);
-      showToast("Context copied — paste it into ChatGPT", "success");
+      showToast("Context copied. Paste it into ChatGPT", "success");
     } catch {
       // Still open even if copy fails
     }

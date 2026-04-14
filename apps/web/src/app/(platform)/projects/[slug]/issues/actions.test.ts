@@ -301,7 +301,7 @@ describe("unassignIssueAction", () => {
     const result = await unassignIssueAction("issue-1", "test-project");
 
     expect(result.error).toBe(
-      "Cannot unassign — issue is in review or completed"
+      "Cannot unassign. Issue is in review or completed"
     );
   });
 
@@ -316,7 +316,7 @@ describe("unassignIssueAction", () => {
     const result = await unassignIssueAction("issue-1", "test-project");
 
     expect(result.error).toBe(
-      "Cannot unassign — issue is in review or completed"
+      "Cannot unassign. Issue is in review or completed"
     );
   });
 
