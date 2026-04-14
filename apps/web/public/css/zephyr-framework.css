@@ -1,0 +1,1022 @@
+/**
+ * Zephyr Framework - Core Styles
+ * Zero-JS interactions using modern CSS
+ *
+ * CSS Custom Properties (--z-*) are the theming API.
+ * Override these in your own stylesheet to customize components.
+ */
+
+@layer reset, components, utilities;
+
+/* Agent headless mode — disables all transitions/animations for fast agent operations */
+[data-z-headless] * {
+  transition-duration: 0s !important;
+  animation-duration: 0s !important;
+}
+
+/* Theming tokens — override these to customize all components */
+:root {
+  --z-transition-duration: 0.3s;
+  --z-transition-timing: ease;
+  --z-border-radius: 0.5rem;
+  --z-border-radius-sm: 0.375rem;
+  --z-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --z-shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --z-z-index-dropdown: 50;
+  --z-z-index-toast: 1000;
+  --z-backdrop-blur: 4px;
+  --z-toast-bg: rgb(17 24 39);
+  --z-toast-color: white;
+
+  /* Agent chat widget tokens */
+  --z-z-index-agent: 1100;
+  --z-agent-bg: white;
+  --z-agent-color: rgb(17 24 39);
+  --z-agent-accent: rgb(59 130 246);
+  --z-agent-width: 380px;
+  --z-agent-height: 520px;
+  --z-agent-fab-size: 3.25rem;
+}
+
+@layer reset {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  * {
+    margin: 0;
+  }
+
+  body {
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  img, picture, video, canvas, svg {
+    display: block;
+    max-width: 100%;
+  }
+
+  input, button, textarea, select {
+    font: inherit;
+  }
+
+  p, h1, h2, h3, h4, h5, h6 {
+    overflow-wrap: break-word;
+  }
+}
+
+/* View Transitions API Support */
+@layer components {
+  @view-transition {
+    navigation: auto;
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: var(--z-transition-duration);
+  }
+
+  ::view-transition-old(slide) {
+    animation: slide-out 0.4s ease-in-out;
+  }
+
+  ::view-transition-new(slide) {
+    animation: slide-in 0.4s ease-in-out;
+  }
+
+  @keyframes slide-out {
+    to {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+  }
+
+  @keyframes slide-in {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+  }
+
+  /* ----- Accordion ----- */
+
+  z-accordion-item [slot="content"] {
+    display: grid;
+    grid-template-rows: 0fr;
+    overflow: hidden;
+    transition:
+      grid-template-rows var(--z-transition-duration) ease-out,
+      padding var(--z-transition-duration) ease-out;
+  }
+
+  z-accordion-item [slot="content"] > * {
+    min-height: 0;
+  }
+
+  z-accordion-item:has([data-open]) [slot="content"] {
+    grid-template-rows: 1fr;
+  }
+
+  z-accordion-item [slot="trigger"] {
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+  }
+
+  z-accordion-item [slot="trigger"]::after {
+    content: '+';
+    position: absolute;
+    right: 1rem;
+    transition: transform var(--z-transition-duration) var(--z-transition-timing);
+  }
+
+  z-accordion-item:has([data-open]) [slot="trigger"]::after {
+    transform: rotate(45deg);
+  }
+
+  /* ----- Modal ----- */
+
+  z-modal dialog {
+    border: none;
+    border-radius: var(--z-border-radius);
+    padding: 0;
+    max-width: 90vw;
+    max-height: 90vh;
+    box-shadow: var(--z-shadow-lg);
+  }
+
+  z-modal dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(var(--z-backdrop-blur));
+  }
+
+  z-modal dialog[open] {
+    animation: modal-in var(--z-transition-duration) ease-out;
+  }
+
+  @keyframes modal-in {
+    from {
+      opacity: 0;
+      transform: scale(0.95) translateY(-1rem);
+    }
+  }
+
+  /* ----- Tabs ----- */
+
+  z-tabs {
+    container-type: inline-size;
+    display: block;
+  }
+
+  z-tabs [data-tab] {
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    transition: color 0.2s var(--z-transition-timing);
+  }
+
+  z-tabs [data-tab]:not([data-active]) {
+    opacity: 0.6;
+  }
+
+  z-tabs [data-tab][data-active]::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: currentColor;
+    animation: tab-slide 0.2s var(--z-transition-timing);
+  }
+
+  @keyframes tab-slide {
+    from {
+      transform: scaleX(0);
+    }
+  }
+
+  z-tabs [data-tab-panel]:not([data-active]) {
+    display: none;
+  }
+
+  z-tabs [data-tab-panel][data-active] {
+    animation: fade-in var(--z-transition-duration) var(--z-transition-timing);
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(0.5rem);
+    }
+  }
+
+  @container (max-width: 500px) {
+    z-tabs [role="tablist"] {
+      flex-direction: column;
+    }
+  }
+
+  /* ----- Floating Panel (shared: select options + dropdown content) ----- */
+
+  z-select [slot="options"],
+  z-dropdown [slot="content"] {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-0.5rem);
+    transition:
+      opacity 0.2s var(--z-transition-timing),
+      transform 0.2s var(--z-transition-timing);
+    background: white;
+    border-radius: var(--z-border-radius-sm);
+    box-shadow: var(--z-shadow);
+    z-index: var(--z-z-index-dropdown);
+  }
+
+  z-select[data-open] [slot="options"],
+  z-dropdown[data-open] [slot="content"] {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  /* ----- Select ----- */
+
+  z-select {
+    position: relative;
+    display: block;
+    container-type: inline-size;
+  }
+
+  z-select [slot="trigger"] {
+    cursor: pointer;
+    user-select: none;
+  }
+
+  z-select [slot="options"] {
+    right: 0;
+    margin-top: 0.25rem;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  z-select [slot="options"] [data-value] {
+    cursor: pointer;
+    transition: background-color 0.15s var(--z-transition-timing);
+  }
+
+  z-select [slot="options"] [data-value]:hover {
+    background-color: rgb(243 244 246);
+  }
+
+  /* ----- Carousel ----- */
+
+  z-carousel {
+    position: relative;
+    overflow: hidden;
+    container-type: inline-size;
+  }
+
+  z-carousel [slot="item"] {
+    display: none;
+    view-transition-name: slide;
+  }
+
+  z-carousel [slot="item"][data-active] {
+    display: block;
+    animation: carousel-enter 0.4s ease-in-out;
+  }
+
+  @keyframes carousel-enter {
+    from {
+      opacity: 0;
+    }
+  }
+
+  z-carousel [data-prev],
+  z-carousel [data-next] {
+    cursor: pointer;
+    user-select: none;
+    transition: opacity 0.2s var(--z-transition-timing);
+  }
+
+  z-carousel [data-prev]:hover,
+  z-carousel [data-next]:hover {
+    opacity: 0.8;
+  }
+
+  @container (max-width: 600px) {
+    z-carousel [data-prev],
+    z-carousel [data-next] {
+      font-size: 0.875rem;
+    }
+  }
+
+  /* ----- Toast ----- */
+
+  z-toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    padding: 1rem 1.5rem;
+    background: var(--z-toast-bg);
+    color: var(--z-toast-color);
+    border-radius: var(--z-border-radius);
+    box-shadow: var(--z-shadow);
+    transform: translateY(calc(100% + 2rem));
+    opacity: 0;
+    transition:
+      transform var(--z-transition-duration) var(--z-transition-timing),
+      opacity var(--z-transition-duration) var(--z-transition-timing);
+    z-index: var(--z-z-index-toast);
+  }
+
+  z-toast[data-visible] {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  /* ----- Dropdown ----- */
+
+  z-dropdown {
+    position: relative;
+    display: inline-block;
+  }
+
+  z-dropdown [slot="content"] {
+    margin-top: 0.5rem;
+    min-width: 200px;
+    border-radius: var(--z-border-radius);
+  }
+
+  /* ----- Dark Mode (via :has()) ----- */
+
+  html:has([data-theme="dark"]),
+  html[data-theme="dark"] {
+    color-scheme: dark;
+  }
+
+  html:has([data-theme="dark"]) z-modal dialog,
+  html[data-theme="dark"] z-modal dialog {
+    background: rgb(17 24 39);
+    color: white;
+  }
+
+  html:has([data-theme="dark"]) z-select [slot="options"],
+  html:has([data-theme="dark"]) z-dropdown [slot="content"],
+  html:has([data-theme="dark"]) z-combobox [slot="listbox"],
+  html[data-theme="dark"] z-select [slot="options"],
+  html[data-theme="dark"] z-dropdown [slot="content"],
+  html[data-theme="dark"] z-combobox [slot="listbox"] {
+    background: rgb(17 24 39);
+    color: white;
+  }
+
+  html:has([data-theme="dark"]) z-select [slot="options"] [data-value]:hover,
+  html:has([data-theme="dark"]) z-combobox [slot="listbox"] [data-value]:hover,
+  html:has([data-theme="dark"]) z-combobox [slot="listbox"] [data-value][data-highlighted],
+  html[data-theme="dark"] z-select [slot="options"] [data-value]:hover,
+  html[data-theme="dark"] z-combobox [slot="listbox"] [data-value]:hover,
+  html[data-theme="dark"] z-combobox [slot="listbox"] [data-value][data-highlighted] {
+    background-color: rgb(31 41 55);
+  }
+
+  html:has([data-theme="dark"]) z-combobox input,
+  html[data-theme="dark"] z-combobox input {
+    background: rgb(17 24 39);
+    color: white;
+    border-color: rgb(55 65 81);
+  }
+
+  html:has([data-theme="dark"]) z-select [slot="trigger"],
+  html[data-theme="dark"] z-select [slot="trigger"] {
+    background: rgb(17 24 39);
+    color: white;
+    border-color: rgb(55 65 81);
+  }
+
+  /* ----- Loading State (via :has()) ----- */
+
+  button:has([data-loading]) {
+    opacity: 0.6;
+    pointer-events: none;
+    position: relative;
+  }
+
+  button:has([data-loading])::after {
+    content: '';
+    position: absolute;
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* ----- Form Validation (via :has()) ----- */
+
+  label:has(+ input:user-invalid) {
+    color: rgb(239 68 68);
+  }
+
+  label:has(+ input:user-valid) {
+    color: rgb(34 197 94);
+  }
+
+  input:user-invalid {
+    border-color: rgb(239 68 68);
+  }
+
+  input:user-valid {
+    border-color: rgb(34 197 94);
+  }
+
+  /* ----- Checked State (via :has()) ----- */
+
+  .card:has(input[type="checkbox"]:checked) {
+    border-color: rgb(59 130 246);
+    background-color: rgb(239 246 255);
+  }
+
+  /* ----- Combobox ----- */
+
+  z-combobox {
+    position: relative;
+    display: inline-block;
+  }
+
+  z-combobox input {
+    width: 100%;
+  }
+
+  z-combobox [slot="listbox"] {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 0.25rem;
+    max-height: 240px;
+    overflow-y: auto;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-0.5rem);
+    transition:
+      opacity 0.2s var(--z-transition-timing),
+      transform 0.2s var(--z-transition-timing);
+    background: white;
+    border-radius: var(--z-border-radius-sm);
+    box-shadow: var(--z-shadow);
+    z-index: var(--z-z-index-dropdown);
+  }
+
+  z-combobox[data-open] [slot="listbox"] {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  z-combobox [slot="listbox"] [data-value] {
+    cursor: pointer;
+    transition: background-color 0.15s var(--z-transition-timing);
+  }
+
+  z-combobox [slot="listbox"] [data-value]:hover,
+  z-combobox [slot="listbox"] [data-value][data-highlighted] {
+    background-color: rgb(243 244 246);
+  }
+
+  /* ----- Date Picker ----- */
+
+  z-datepicker {
+    position: relative;
+    display: inline-block;
+  }
+
+  z-datepicker [slot="display"] {
+    cursor: pointer;
+    user-select: none;
+  }
+
+  z-datepicker .z-datepicker-native {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+  }
+
+  /* ----- Infinite Scroll ----- */
+
+  z-infinite-scroll {
+    display: block;
+  }
+
+  z-infinite-scroll .z-infinite-sentinel {
+    height: 1px;
+    visibility: hidden;
+  }
+
+  z-infinite-scroll[data-loading]::after {
+    content: '';
+    display: block;
+    width: 2rem;
+    height: 2rem;
+    margin: 1rem auto;
+    border: 3px solid currentColor;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+
+  /* ----- Sortable ----- */
+
+  z-sortable {
+    display: block;
+  }
+
+  z-sortable [data-sortable] {
+    cursor: grab;
+    transition: opacity 0.2s var(--z-transition-timing),
+                transform 0.2s var(--z-transition-timing);
+    user-select: none;
+  }
+
+  z-sortable [data-sortable][data-dragging] {
+    opacity: 0.4;
+    cursor: grabbing;
+  }
+
+  z-sortable [data-sortable][data-drag-over] {
+    border-top: 2px solid rgb(59 130 246);
+    transform: translateY(2px);
+  }
+
+  /* ----- File Upload ----- */
+
+  z-file-upload {
+    display: block;
+  }
+
+  z-file-upload .z-file-input-hidden {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+  }
+
+  z-file-upload [slot="dropzone"] {
+    border: 2px dashed currentColor;
+    border-radius: var(--z-border-radius);
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition:
+      border-color var(--z-transition-duration) var(--z-transition-timing),
+      background-color var(--z-transition-duration) var(--z-transition-timing);
+    opacity: 0.6;
+  }
+
+  z-file-upload [slot="dropzone"]:hover,
+  z-file-upload[data-dragover] [slot="dropzone"] {
+    opacity: 1;
+    border-style: solid;
+  }
+
+  z-file-upload .z-file-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+    font-size: 0.875rem;
+  }
+
+  z-file-upload .z-file-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  z-file-upload .z-file-size {
+    opacity: 0.6;
+    flex-shrink: 0;
+  }
+
+  z-file-upload .z-file-progress {
+    width: 80px;
+    height: 4px;
+    background: rgb(0 0 0 / 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  z-file-upload .z-file-progress-bar {
+    height: 100%;
+    width: 0;
+    background: rgb(59 130 246);
+    border-radius: 2px;
+    transition: width 0.3s var(--z-transition-timing);
+  }
+
+  z-file-upload .z-file-item[data-complete] .z-file-progress-bar {
+    background: rgb(34 197 94);
+  }
+
+  /* ----- Virtual List ----- */
+
+  z-virtual-list {
+    display: block;
+    position: relative;
+  }
+
+  z-virtual-list .z-virtual-spacer {
+    position: relative;
+  }
+
+  z-virtual-list .z-virtual-viewport {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    will-change: transform;
+  }
+
+  z-virtual-list .z-virtual-item {
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+  }
+
+  /* ----- Agent Chat Widget ----- */
+
+  /* The z-agent element itself is a positioned anchor for the FAB and panel */
+  z-agent {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    z-index: var(--z-z-index-agent);
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--z-agent-color);
+  }
+
+  /* Position variants — override placement via data attribute */
+  z-agent[data-position="bottom-left"] { right: auto; left: 1.5rem; }
+  z-agent[data-position="top-right"] { bottom: auto; top: 1.5rem; }
+  z-agent[data-position="top-left"] { bottom: auto; top: 1.5rem; right: auto; left: 1.5rem; }
+
+  /* Floating action button — the circular chat toggle */
+  z-agent .z-agent-fab {
+    width: var(--z-agent-fab-size);
+    height: var(--z-agent-fab-size);
+    border-radius: 50%;
+    border: none;
+    background: var(--z-agent-accent);
+    color: white;
+    font-size: 1.25rem;
+    cursor: pointer;
+    box-shadow: var(--z-shadow-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s var(--z-transition-timing),
+                box-shadow 0.2s var(--z-transition-timing);
+  }
+
+  z-agent .z-agent-fab:hover {
+    transform: scale(1.08);
+    box-shadow: 0 20px 30px -8px rgb(0 0 0 / 0.2);
+  }
+
+  /* Hide FAB when panel is open */
+  z-agent[data-open] .z-agent-fab {
+    display: none;
+  }
+
+  /* Chat panel — the main conversation interface */
+  z-agent .z-agent-panel {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: var(--z-agent-width);
+    height: var(--z-agent-height);
+    max-height: calc(100vh - 3rem);
+    max-width: calc(100vw - 3rem);
+    background: var(--z-agent-bg);
+    border-radius: var(--z-border-radius);
+    box-shadow: var(--z-shadow-lg);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    /* Panel open/close animation — GPU-accelerated opacity + transform */
+    opacity: 0;
+    transform: translateY(1rem) scale(0.95);
+    pointer-events: none;
+    transition: opacity 0.2s var(--z-transition-timing),
+                transform 0.2s var(--z-transition-timing);
+  }
+
+  /* Panel anchors to left side for left-positioned variants */
+  z-agent[data-position="bottom-left"] .z-agent-panel,
+  z-agent[data-position="top-left"] .z-agent-panel {
+    right: auto;
+    left: 0;
+  }
+
+  /* Panel anchors to top for top-positioned variants */
+  z-agent[data-position="top-right"] .z-agent-panel,
+  z-agent[data-position="top-left"] .z-agent-panel {
+    bottom: auto;
+    top: 0;
+    transform: translateY(-1rem) scale(0.95);
+  }
+
+  /* Open state — panel becomes visible and interactive */
+  z-agent[data-open] .z-agent-panel {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+
+  /* Panel header — title bar with close button */
+  z-agent .z-agent-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid rgb(0 0 0 / 0.08);
+    font-weight: 600;
+    font-size: 0.8125rem;
+    letter-spacing: 0.01em;
+    flex-shrink: 0;
+  }
+
+  z-agent .z-agent-close {
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    font-size: 1.125rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: inherit;
+    opacity: 0.5;
+    transition: opacity 0.15s, background 0.15s;
+    padding: 0;
+  }
+
+  z-agent .z-agent-close:hover {
+    opacity: 1;
+    background: rgb(0 0 0 / 0.06);
+  }
+
+  /* Messages area — scrollable conversation history */
+  z-agent .z-agent-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+
+    /* Smooth scroll when new messages are added */
+    scroll-behavior: smooth;
+  }
+
+  /* Individual message bubble — shared base styles */
+  z-agent .z-agent-msg {
+    max-width: 85%;
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--z-border-radius);
+    word-wrap: break-word;
+    animation: fade-in 0.2s var(--z-transition-timing);
+  }
+
+  /* User messages — right-aligned, accent color */
+  z-agent .z-agent-msg-user {
+    align-self: flex-end;
+    background: var(--z-agent-accent);
+    color: white;
+  }
+
+  /* Assistant messages — left-aligned, light background */
+  z-agent .z-agent-msg-assistant {
+    align-self: flex-start;
+    background: rgb(243 244 246);
+  }
+
+  /* Tool action indicators — small italic status text */
+  z-agent .z-agent-msg-action {
+    align-self: flex-start;
+    font-size: 0.75rem;
+    color: rgb(107 114 128);
+    font-style: italic;
+    padding: 0.125rem 0;
+    max-width: 100%;
+  }
+
+  /* Error messages */
+  z-agent .z-agent-msg-error {
+    align-self: flex-start;
+    background: rgb(254 242 242);
+    color: rgb(185 28 28);
+    font-size: 0.8125rem;
+  }
+
+  /* Typing indicator — three dots animation */
+  z-agent .z-agent-typing {
+    align-self: flex-start;
+    display: flex;
+    gap: 0.25rem;
+    padding: 0.625rem 0.75rem;
+    background: rgb(243 244 246);
+    border-radius: var(--z-border-radius);
+  }
+
+  z-agent .z-agent-typing-dot {
+    width: 0.375rem;
+    height: 0.375rem;
+    border-radius: 50%;
+    background: rgb(156 163 175);
+    animation: z-agent-bounce 1.2s infinite;
+  }
+
+  z-agent .z-agent-typing-dot:nth-child(2) { animation-delay: 0.15s; }
+  z-agent .z-agent-typing-dot:nth-child(3) { animation-delay: 0.3s; }
+
+  @keyframes z-agent-bounce {
+    0%, 60%, 100% { transform: translateY(0); }
+    30% { transform: translateY(-0.375rem); }
+  }
+
+  /* Input row — message input and send button */
+  z-agent .z-agent-input-row {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    border-top: 1px solid rgb(0 0 0 / 0.08);
+    flex-shrink: 0;
+  }
+
+  z-agent .z-agent-input {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid rgb(209 213 219);
+    border-radius: var(--z-border-radius-sm);
+    font-size: 0.8125rem;
+    outline: none;
+    transition: border-color 0.15s;
+    background: var(--z-agent-bg);
+    color: var(--z-agent-color);
+  }
+
+  z-agent .z-agent-input:focus {
+    border-color: var(--z-agent-accent);
+  }
+
+  z-agent .z-agent-send {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: var(--z-border-radius-sm);
+    border: none;
+    background: var(--z-agent-accent);
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.15s;
+    flex-shrink: 0;
+    padding: 0;
+  }
+
+  z-agent .z-agent-send:hover {
+    opacity: 0.85;
+  }
+
+  z-agent .z-agent-send:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  /* Component pulse — brief highlight when the agent acts on a component */
+  @keyframes z-agent-pulse {
+    0%, 100% { outline-color: transparent; }
+    50% { outline-color: var(--z-agent-accent); }
+  }
+
+  .z-agent-target {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    animation: z-agent-pulse 0.6s ease 2;
+  }
+
+  /* Dark mode support — matches both html[data-theme] and descendant :has() */
+  html:has([data-theme="dark"]) z-agent .z-agent-panel,
+  html[data-theme="dark"] z-agent .z-agent-panel {
+    background: rgb(30 32 38);
+    color: rgb(229 231 235);
+  }
+
+  html:has([data-theme="dark"]) z-agent .z-agent-header,
+  html[data-theme="dark"] z-agent .z-agent-header {
+    border-bottom-color: rgb(255 255 255 / 0.08);
+  }
+
+  html:has([data-theme="dark"]) z-agent .z-agent-msg-assistant,
+  html[data-theme="dark"] z-agent .z-agent-msg-assistant {
+    background: rgb(55 65 81);
+  }
+
+  html:has([data-theme="dark"]) z-agent .z-agent-typing,
+  html[data-theme="dark"] z-agent .z-agent-typing {
+    background: rgb(55 65 81);
+  }
+
+  html:has([data-theme="dark"]) z-agent .z-agent-typing-dot,
+  html[data-theme="dark"] z-agent .z-agent-typing-dot {
+    background: rgb(107 114 128);
+  }
+
+  html:has([data-theme="dark"]) z-agent .z-agent-input,
+  html[data-theme="dark"] z-agent .z-agent-input {
+    background: rgb(17 24 39);
+    color: rgb(229 231 235);
+    border-color: rgb(55 65 81);
+  }
+
+  html:has([data-theme="dark"]) z-agent .z-agent-input-row,
+  html[data-theme="dark"] z-agent .z-agent-input-row {
+    border-top-color: rgb(255 255 255 / 0.08);
+  }
+
+  html:has([data-theme="dark"]) z-agent .z-agent-close:hover,
+  html[data-theme="dark"] z-agent .z-agent-close:hover {
+    background: rgb(255 255 255 / 0.1);
+  }
+
+  html:has([data-theme="dark"]) z-agent .z-agent-msg-error,
+  html[data-theme="dark"] z-agent .z-agent-msg-error {
+    background: rgb(69 26 26);
+    color: rgb(252 165 165);
+  }
+
+  /* ----- Scroll-driven Animations ----- */
+
+  @supports (animation-timeline: scroll()) {
+    .fade-in-on-scroll {
+      animation: fade-in-scroll linear;
+      animation-timeline: view();
+      animation-range: entry 0% cover 30%;
+    }
+
+    @keyframes fade-in-scroll {
+      from {
+        opacity: 0;
+        transform: translateY(2rem);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  }
+}
+
+@layer utilities {
+  .container {
+    container-type: inline-size;
+    width: 100%;
+  }
+
+  @container (min-width: 640px) {
+    .container-sm\:grid-cols-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @container (min-width: 768px) {
+    .container-md\:grid-cols-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+}
