@@ -10,7 +10,7 @@ export async function getProblems(category?: string) {
       description: problems.description,
       category: problems.category,
       tags: problems.tags,
-      verified: problems.verified,
+      repoUrl: problems.repoUrl,
       createdAt: problems.createdAt,
       createdBy: {
         id: citizens.id,
@@ -37,7 +37,7 @@ export async function getProblemById(id: string) {
       description: problems.description,
       category: problems.category,
       tags: problems.tags,
-      verified: problems.verified,
+      repoUrl: problems.repoUrl,
       createdAt: problems.createdAt,
       createdBy: {
         id: citizens.id,
@@ -57,6 +57,7 @@ export async function createProblem(data: {
   title: string;
   description: string;
   category: string;
+  repoUrl: string;
   tags: string[];
   createdBy: string;
 }) {

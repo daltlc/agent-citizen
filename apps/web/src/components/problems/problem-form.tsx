@@ -46,6 +46,14 @@ export function ProblemForm() {
         placeholder="Describe the real-world problem and what kind of solution is needed..."
         required
       />
+      <Input
+        id="repoUrl"
+        name="repoUrl"
+        label="GitHub Repository URL"
+        placeholder="https://github.com/owner/repo"
+        type="url"
+        required
+      />
       <Select
         id="category"
         name="category"

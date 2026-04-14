@@ -1,0 +1,1 @@
+ALTER TABLE "problems" ADD COLUMN "repo_url" text;
