@@ -2,63 +2,199 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ============================================
+   Citizen Design Tokens: "Desert Tech" palette
+   Warm charcoal/stone base + bright tech accents
+   ============================================ */
 
-  /* Zephyr theme overrides — match Citizen palette */
+:root {
+  /* Backgrounds */
+  --c-bg-deep: #0f0e0c;
+  --c-bg: #1a1816;
+  --c-bg-elevated: #242120;
+  --c-bg-muted: #2e2a28;
+
+  /* Borders */
+  --c-border: #332f2b;
+  --c-border-subtle: #443e38;
+
+  /* Text */
+  --c-text: #f0ece4;
+  --c-text-muted: #9a9490;
+  --c-text-dim: #6e6862;
+
+  /* Accents */
+  --c-accent: #4eeae0;
+  --c-accent-warm: #e8945a;
+  --c-accent-gold: #d4b062;
+  --c-accent-sand: #e8d8b8;
+
+  /* Legacy compat */
+  --background: #0f0e0c;
+  --foreground: #f0ece4;
+
+  /* Zephyr theme overrides */
   --z-border-radius: 0.5rem;
   --z-border-radius-sm: 0.375rem;
   --z-transition-duration: 0.2s;
-  --z-toast-bg: rgb(31 41 55);
-  --z-toast-color: rgb(243 244 246);
+  --z-toast-bg: var(--c-bg-elevated);
+  --z-toast-color: var(--c-text);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/* ============================================
+   Base styles
+   ============================================ */
 
 body {
-  color: var(--foreground);
-  background: var(--background);
+  color: var(--c-text);
+  background: var(--c-bg-deep);
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* Zephyr dark mode overrides for Citizen's gray palette */
+/* Grain noise overlay, subtle texture for depth */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+}
+
+/* Custom selection */
+::selection {
+  background: var(--c-accent);
+  color: var(--c-bg-deep);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--c-bg-deep);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--c-border-subtle);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--c-text-dim);
+}
+
+/* ============================================
+   Scroll-driven animation utilities
+   Extends Zephyr's existing pattern
+   ============================================ */
+
+@supports (animation-timeline: view()) {
+  .scroll-fade-up {
+    animation: scroll-fade-up linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 40%;
+  }
+
+  .scroll-slide-left {
+    animation: scroll-slide-left linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 40%;
+  }
+
+  .scroll-scale-in {
+    animation: scroll-scale-in linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 40%;
+  }
+
+  @keyframes scroll-fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes scroll-slide-left {
+    from {
+      opacity: 0;
+      transform: translateX(-30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes scroll-scale-in {
+    from {
+      opacity: 0;
+      transform: scale(0.92);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+}
+
+/* Fallback: ensure content is visible when scroll animations aren't supported */
+@supports not (animation-timeline: view()) {
+  .scroll-fade-up,
+  .scroll-slide-left,
+  .scroll-scale-in {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ============================================
+   Zephyr dark mode overrides, mapped to tokens
+   ============================================ */
+
 html[data-theme="dark"] z-modal dialog {
-  background: rgb(17 24 39);
-  color: rgb(243 244 246);
-  border: 1px solid rgb(55 65 81);
+  background: var(--c-bg-elevated);
+  color: var(--c-text);
+  border: 1px solid var(--c-border);
 }
 
 html[data-theme="dark"] z-select [slot="options"],
 html[data-theme="dark"] z-dropdown [slot="content"],
 html[data-theme="dark"] z-combobox [slot="listbox"] {
-  background: rgb(17 24 39);
-  border: 1px solid rgb(55 65 81);
-  color: rgb(243 244 246);
+  background: var(--c-bg-elevated);
+  border: 1px solid var(--c-border);
+  color: var(--c-text);
 }
 
 html[data-theme="dark"] z-tabs [role="tablist"] {
-  border-bottom-color: rgb(55 65 81);
+  border-bottom-color: var(--c-border);
 }
 
 html[data-theme="dark"] z-tabs [role="tab"] {
-  color: rgb(156 163 175);
+  color: var(--c-text-muted);
 }
 
 html[data-theme="dark"] z-tabs [role="tab"][data-active] {
-  color: rgb(243 244 246);
-  border-bottom-color: rgb(243 244 246);
+  color: var(--c-text);
+  border-bottom-color: var(--c-accent);
 }
 
 html[data-theme="dark"] z-accordion-item button[slot="trigger"] {
-  color: rgb(243 244 246);
-  border-bottom: 1px solid rgb(55 65 81);
+  color: var(--c-text);
+  border-bottom: 1px solid var(--c-border);
 }
+
+/* ============================================
+   Utility layer
+   ============================================ */
 
 @layer utilities {
   .text-balance {

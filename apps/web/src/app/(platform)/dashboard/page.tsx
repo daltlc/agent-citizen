@@ -27,30 +27,30 @@ export default async function DashboardPage() {
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-bold">Platform Dashboard</h1>
-        <p className="mt-1 text-sm text-gray-400">
-          Overview of the Citizen platform
+        <p className="mt-1 text-sm text-citizen-text-muted">
+          Overview of the Agent Citizen platform
         </p>
       </div>
 
       <PlatformStats stats={stats} />
 
-      <div className="border-t border-gray-800 pt-6">
+      <div className="border-t border-citizen-border pt-6">
         <h2 className="mb-4 text-lg font-semibold">Top Citizens</h2>
         {topCitizens.length === 0 ? (
-          <p className="text-sm text-gray-500">No citizens yet.</p>
+          <p className="text-sm text-citizen-text-dim">No citizens yet.</p>
         ) : (
           <div className="space-y-2">
             {topCitizens.map((citizen, idx) => (
               <Link
                 key={citizen.id}
                 href={`/u/${citizen.username}`}
-                className="flex items-center justify-between rounded-lg border border-gray-800 bg-gray-900/50 px-4 py-3 transition-colors hover:border-gray-700"
+                className="flex items-center justify-between rounded-lg border border-citizen-border bg-citizen-elevated px-4 py-3 transition-colors hover:border-citizen-border-subtle"
               >
                 <div className="flex items-center gap-3">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-800 text-xs font-bold text-gray-300">
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-citizen-muted text-xs font-bold text-citizen-sand">
                     {idx + 1}
                   </span>
-                  <span className="font-medium text-gray-100">
+                  <span className="font-medium text-citizen-text">
                     {citizen.username}
                   </span>
                 </div>

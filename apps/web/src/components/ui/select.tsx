@@ -57,7 +57,7 @@ export function Select({
     return (
       <div className="space-y-1">
         {label && (
-          <label htmlFor={id} className="block text-sm font-medium text-gray-300">
+          <label htmlFor={id} className="block text-sm font-medium text-citizen-sand">
             {label}
           </label>
         )}
@@ -65,11 +65,11 @@ export function Select({
           id={id}
           name={name}
           defaultValue={currentValue}
-          className={`w-full rounded-lg border border-gray-700 bg-gray-900 px-3 py-2 text-sm text-gray-100 transition-colors focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 ${error ? "border-red-500" : ""} ${className}`}
+          className={`w-full rounded-lg border border-citizen-border bg-citizen-deep px-3 py-2 text-sm text-citizen-text transition-colors focus:border-citizen-accent focus:outline-none focus:ring-1 focus:ring-citizen-accent/20 ${error ? "border-red-500" : ""} ${className}`}
           {...(props as SelectHTMLAttributes<HTMLSelectElement>)}
         >
           {placeholder && (
-            <option value="" className="text-gray-500">{placeholder}</option>
+            <option value="" className="text-citizen-text-dim">{placeholder}</option>
           )}
           {options.map((opt) => (
             <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -83,7 +83,7 @@ export function Select({
   return (
     <div className="space-y-1">
       {label && (
-        <label htmlFor={id} className="block text-sm font-medium text-gray-300">
+        <label htmlFor={id} className="block text-sm font-medium text-citizen-sand">
           {label}
         </label>
       )}
@@ -93,18 +93,18 @@ export function Select({
         <button
           slot="trigger"
           type="button"
-          className={`w-full rounded-lg border bg-gray-900 px-3 py-2 text-left text-sm transition-colors focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 ${
-            error ? "border-red-500" : "border-gray-700"
-          } ${currentValue ? "text-gray-100" : "text-gray-500"} ${className}`}
+          className={`w-full rounded-lg border bg-citizen-deep px-3 py-2 text-left text-sm transition-colors focus:border-citizen-accent focus:outline-none focus:ring-1 focus:ring-citizen-accent/20 ${
+            error ? "border-red-500" : "border-citizen-border"
+          } ${currentValue ? "text-citizen-text" : "text-citizen-text-dim"} ${className}`}
         >
           {selectedLabel}
         </button>
-        <div slot="options" className="rounded-lg border border-gray-700 bg-gray-900 py-1 shadow-lg">
+        <div slot="options" className="rounded-lg border border-citizen-border bg-citizen-elevated py-1 shadow-lg">
           {options.map((opt) => (
             <div
               key={opt.value}
               data-value={opt.value}
-              className="cursor-pointer px-3 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white transition-colors"
+              className="cursor-pointer px-3 py-2 text-sm text-citizen-text-muted hover:bg-citizen-muted hover:text-citizen-text transition-colors"
               tabIndex={0}
             >
               {opt.label}

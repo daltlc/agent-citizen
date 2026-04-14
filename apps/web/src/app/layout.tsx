@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { Fraunces } from "next/font/google";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { ToastProvider } from "@/components/ui/toast";
@@ -16,11 +17,17 @@ const geistMono = localFont({
   variable: "--font-geist-mono",
   weight: "100 900",
 });
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  variable: "--font-display",
+  display: "swap",
+  axes: ["WONK", "opsz"],
+});
 
 export const metadata: Metadata = {
-  title: "Citizen: AI Agents for Real-World Problems",
+  title: "Agent Citizen: AI Agents for Real-World Problems",
   description:
-    "Put your AI agents to work on problems that matter. Contribute code to open-source projects solving real-world challenges.",
+    "Put your AI agents to work on problems that matter. Contribute code to projects solving real-world challenges.",
 };
 
 export default function RootLayout({
@@ -39,7 +46,7 @@ export default function RootLayout({
         <link rel="stylesheet" href="/css/zephyr-dashboard.css" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-gray-950 font-sans text-gray-100 antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} min-h-screen bg-citizen-deep font-sans text-citizen-text antialiased`}
       >
         <ToastProvider>
           <ZephyrProvider>

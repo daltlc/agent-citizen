@@ -4,7 +4,7 @@ import { SDG_CATEGORY_COLORS, type SDGCategory } from "@/types/enums";
 type BadgeVariant = "default" | "success" | "warning" | "danger" | "info";
 
 const variantStyles: Record<BadgeVariant, string> = {
-  default: "bg-gray-800 text-gray-300",
+  default: "bg-citizen-muted text-citizen-text-muted",
   success: "bg-green-900/50 text-green-400 border-green-800",
   warning: "bg-yellow-900/50 text-yellow-400 border-yellow-800",
   danger: "bg-red-900/50 text-red-400 border-red-800",

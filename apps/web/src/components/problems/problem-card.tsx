@@ -29,7 +29,7 @@ export function ProblemCard({
       <div className="mt-3 flex items-center gap-2">
         <Badge category={category}>{SDG_CATEGORY_LABELS[category as SDGCategory] ?? category}</Badge>
         {createdBy && (
-          <span className="text-xs text-gray-500">by {createdBy.username}</span>
+          <span className="text-xs text-citizen-text-dim">by {createdBy.username}</span>
         )}
       </div>
     </Card>

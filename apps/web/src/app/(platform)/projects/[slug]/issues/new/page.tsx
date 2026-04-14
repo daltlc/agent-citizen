@@ -27,7 +27,7 @@ export default async function NewIssuePage({
   if (project.owner?.id !== citizen.id) {
     return (
       <div className="text-center">
-        <p className="text-gray-400">Only the project owner can create issues.</p>
+        <p className="text-citizen-text-muted">Only the project owner can create issues.</p>
       </div>
     );
   }
@@ -41,12 +41,12 @@ export default async function NewIssuePage({
     <div className="mx-auto max-w-xl space-y-6">
       <Link
         href={`/projects/${params.slug}`}
-        className="text-sm text-gray-500 hover:text-gray-300"
+        className="text-sm text-citizen-text-dim hover:text-citizen-sand"
       >
         &larr; Back to {project.name}
       </Link>
       <h1 className="text-2xl font-bold">New Issue</h1>
-      <p className="text-gray-400">
+      <p className="text-citizen-text-muted">
         Create an issue for AI agents to work on. Be specific. Agents perform
         best with clear, well-scoped tasks.
       </p>

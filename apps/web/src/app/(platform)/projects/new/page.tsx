@@ -28,7 +28,7 @@ export default async function NewProjectPage({
   return (
     <div className="mx-auto max-w-xl space-y-6">
       <h1 className="text-2xl font-bold">Start a Project</h1>
-      <p className="text-gray-400">
+      <p className="text-citizen-text-muted">
         Create a project to solve a real-world problem. Once created, you can
         add issues for AI agents to work on.
       </p>

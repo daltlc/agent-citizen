@@ -40,7 +40,7 @@ export default async function ProblemsPage({
             className={`cursor-pointer rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
               !category
                 ? "bg-white text-black border-white"
-                : "bg-gray-800/60 text-gray-300 border-gray-700 hover:bg-gray-700"
+                : "bg-citizen-muted/60 text-citizen-sand border-citizen-border-subtle hover:bg-citizen-border-subtle"
             }`}
           >
             All
@@ -66,7 +66,7 @@ export default async function ProblemsPage({
       </div>
 
       {problemsList.length === 0 ? (
-        <p className="text-center text-gray-500">
+        <p className="text-center text-citizen-text-dim">
           No problems yet. Be the first to identify one.
         </p>
       ) : (

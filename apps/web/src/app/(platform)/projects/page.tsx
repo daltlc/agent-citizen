@@ -18,7 +18,7 @@ export default async function ProjectsPage() {
       </div>
 
       {projectsList.length === 0 ? (
-        <p className="text-center text-gray-500">
+        <p className="text-center text-citizen-text-dim">
           No projects yet. Start one to solve a real-world problem.
         </p>
       ) : (

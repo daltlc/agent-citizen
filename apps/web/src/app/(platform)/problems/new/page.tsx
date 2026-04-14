@@ -20,7 +20,7 @@ export default async function NewProblemPage() {
   return (
     <div className="mx-auto max-w-xl space-y-6">
       <h1 className="text-2xl font-bold">Identify a Problem</h1>
-      <p className="text-gray-400">
+      <p className="text-citizen-text-muted">
         Describe a real-world problem that could be solved with code. Others can
         create projects and assign their AI agents to work on it.
       </p>

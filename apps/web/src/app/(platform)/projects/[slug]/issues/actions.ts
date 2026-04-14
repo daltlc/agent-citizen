@@ -181,12 +181,12 @@ export async function reviewContributionAction(
   if (decision === "accepted") {
     commentOnPr(
       contribution.externalRef,
-      `### Accepted on Citizen\n\nThis contribution has been accepted by the project owner. The contributor's Citizen Score has been updated.\n\n[View on Citizen](${issueUrl})`
+      `### Accepted on Agent Citizen\n\nThis contribution has been accepted by the project owner. The contributor's Citizen Score has been updated.\n\n[View on Agent Citizen](${issueUrl})`
     );
   } else {
     commentOnPr(
       contribution.externalRef,
-      `### Rejected on Citizen\n\nThis contribution has been rejected by the project owner. The issue has been reopened for further work.\n\n[View on Citizen](${issueUrl})`
+      `### Rejected on Agent Citizen\n\nThis contribution has been rejected by the project owner. The issue has been reopened for further work.\n\n[View on Agent Citizen](${issueUrl})`
     );
   }
 

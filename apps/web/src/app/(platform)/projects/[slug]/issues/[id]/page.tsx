@@ -70,7 +70,7 @@ export default async function IssueDetailPage({
       <div>
         <Link
           href={`/projects/${params.slug}`}
-          className="text-sm text-gray-500 hover:text-gray-300"
+          className="text-sm text-citizen-text-dim hover:text-citizen-sand"
         >
           &larr; Back to {project.name}
         </Link>
@@ -87,16 +87,16 @@ export default async function IssueDetailPage({
             {issue.difficulty}
           </Badge>
           {issue.assignedTo && (
-            <span className="text-sm text-gray-400">
+            <span className="text-sm text-citizen-text-muted">
               Assigned to{" "}
               <Link
                 href={`/u/${issue.assignedTo.username}`}
-                className="text-gray-200 hover:text-white"
+                className="text-citizen-text hover:text-citizen-text"
               >
                 {issue.assignedTo.username}
               </Link>
               {issue.assignedAgentName && (
-                <span className="text-gray-500">
+                <span className="text-citizen-text-dim">
                   {" "}
                   (via {issue.assignedAgentName})
                 </span>
@@ -105,13 +105,13 @@ export default async function IssueDetailPage({
           )}
         </div>
 
-        <p className="whitespace-pre-wrap text-gray-300">
+        <p className="whitespace-pre-wrap text-citizen-sand">
           {issue.description}
         </p>
       </div>
 
       {canAssign && (
-        <div className="rounded-lg border border-gray-800 bg-gray-900/50 p-4">
+        <div className="rounded-lg border border-citizen-border bg-citizen-elevated p-4">
           <h3 className="mb-3 font-medium">Put your agent to work</h3>
           <AssignButton
             action={handleAssign}
@@ -126,7 +126,7 @@ export default async function IssueDetailPage({
       )}
 
       {isAssigned && (issue.status === "assigned" || issue.status === "in_progress") && (
-        <div className="rounded-lg border border-gray-800 bg-gray-900/50 p-4">
+        <div className="rounded-lg border border-citizen-border bg-citizen-elevated p-4">
           <div className="mb-3 flex items-center justify-between">
             <h3 className="font-medium">Agent tools</h3>
             <UnassignButton
@@ -146,16 +146,16 @@ export default async function IssueDetailPage({
       )}
 
       {canSubmit && (
-        <div className="rounded-lg border border-gray-800 bg-gray-900/50 p-4">
+        <div className="rounded-lg border border-citizen-border bg-citizen-elevated p-4">
           <h3 className="mb-3 font-medium">Submit your work</h3>
           <SubmitContributionForm action={handleSubmit} />
         </div>
       )}
 
-      <div className="border-t border-gray-800 pt-6">
+      <div className="border-t border-citizen-border pt-6">
         <h2 className="text-xl font-semibold">Contributions</h2>
         {contributions.length === 0 ? (
-          <p className="mt-4 text-sm text-gray-500">
+          <p className="mt-4 text-sm text-citizen-text-dim">
             No contributions yet.
           </p>
         ) : (
@@ -163,7 +163,7 @@ export default async function IssueDetailPage({
             {contributions.map((contribution) => (
               <div
                 key={contribution.id}
-                className="flex items-center justify-between rounded-lg border border-gray-800 bg-gray-900/30 p-3"
+                className="flex items-center justify-between rounded-lg border border-citizen-border bg-citizen-elevated/80 p-3"
               >
                 <div className="space-y-1">
                   <a
@@ -176,11 +176,11 @@ export default async function IssueDetailPage({
                   </a>
                   <div className="flex items-center gap-2">
                     {contribution.citizen && (
-                      <span className="text-xs text-gray-500">
+                      <span className="text-xs text-citizen-text-dim">
                         {contribution.citizen.username}
                       </span>
                     )}
-                    <span className="text-xs text-gray-600">
+                    <span className="text-xs text-citizen-text-dim">
                       {contribution.submittedAt.toLocaleDateString()}
                     </span>
                   </div>

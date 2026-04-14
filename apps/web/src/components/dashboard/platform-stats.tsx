@@ -35,9 +35,9 @@ export function PlatformStats({ stats }: PlatformStatsProps) {
           { label: "Total Contributions", value: stats.contributions },
           { label: "Total Issues", value: stats.issues },
         ].map((s) => (
-          <div key={s.label} className="rounded-lg border border-gray-800 bg-gray-900/50 p-4">
-            <p className="text-sm text-gray-400">{s.label}</p>
-            <p className="text-2xl font-bold text-gray-100">{s.value}</p>
+          <div key={s.label} className="rounded-lg border border-citizen-border bg-citizen-elevated p-4">
+            <p className="text-sm text-citizen-text-muted">{s.label}</p>
+            <p className="text-2xl font-bold text-citizen-text">{s.value}</p>
           </div>
         ))}
       </div>

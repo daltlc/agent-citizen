@@ -78,7 +78,7 @@ function buildClaudeCodeCommand({
   projectName,
   repoUrl,
 }: Pick<AgentActionsProps, "issueTitle" | "issueDescription" | "projectName" | "repoUrl">) {
-  const prompt = `You are working on the Citizen project '${projectName}'.
+  const prompt = `You are working on the Agent Citizen project '${projectName}'.
 
 ## Issue: ${issueTitle}
 
@@ -101,7 +101,7 @@ function buildCursorDeepLink({
   projectName,
   repoUrl,
 }: Pick<AgentActionsProps, "issueTitle" | "issueDescription" | "projectName" | "repoUrl">) {
-  const prompt = `You are working on the Citizen project '${projectName}'.
+  const prompt = `You are working on the Agent Citizen project '${projectName}'.
 Repository: ${repoUrl ?? "not linked"}
 
 ## Issue: ${issueTitle}
@@ -113,7 +113,7 @@ ${issueDescription}
 Solve this issue and commit your changes to a new branch.`;
 
   // Cursor deep links have an 8000 char limit
-  const truncated = prompt.length > 7500 ? prompt.slice(0, 7500) + "\n\n[Description truncated. See full issue on Citizen]" : prompt;
+  const truncated = prompt.length > 7500 ? prompt.slice(0, 7500) + "\n\n[Description truncated. See full issue on Agent Citizen]" : prompt;
 
   return `cursor://anysphere.cursor-deeplink/prompt?text=${encodeURIComponent(truncated)}`;
 }
@@ -182,14 +182,14 @@ export function AgentActions(props: AgentActionsProps) {
       >
         <button
           onClick={handleCopyClaudeCode}
-          className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-gray-300 hover:bg-gray-800 hover:text-white transition-colors"
+          className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-citizen-sand hover:bg-citizen-muted hover:text-citizen-text transition-colors"
         >
           <ClaudeIcon className="h-4 w-4" />
           Copy Claude Code Command
         </button>
         <button
           onClick={handleOpenInCursor}
-          className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-gray-300 hover:bg-gray-800 hover:text-white transition-colors"
+          className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-citizen-sand hover:bg-citizen-muted hover:text-citizen-text transition-colors"
         >
           <CursorIcon className="h-4 w-4" />
           Open in Cursor
@@ -197,7 +197,7 @@ export function AgentActions(props: AgentActionsProps) {
         {props.repoUrl && (
           <button
             onClick={handleOpenInVSCode}
-            className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-gray-300 hover:bg-gray-800 hover:text-white transition-colors"
+            className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-citizen-sand hover:bg-citizen-muted hover:text-citizen-text transition-colors"
           >
             <VSCodeIcon className="h-4 w-4" />
             Open in VS Code
@@ -214,19 +214,19 @@ export function AgentActions(props: AgentActionsProps) {
       >
         <button
           onClick={handleOpenInClaude}
-          className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-gray-300 hover:bg-gray-800 hover:text-white transition-colors"
+          className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-citizen-sand hover:bg-citizen-muted hover:text-citizen-text transition-colors"
         >
           Open in Claude
         </button>
         <button
           onClick={handleOpenInChatGPT}
-          className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-gray-300 hover:bg-gray-800 hover:text-white transition-colors"
+          className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-citizen-sand hover:bg-citizen-muted hover:text-citizen-text transition-colors"
         >
           Open in ChatGPT
         </button>
         <button
           onClick={handleCopyContext}
-          className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-gray-300 hover:bg-gray-800 hover:text-white transition-colors"
+          className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-citizen-sand hover:bg-citizen-muted hover:text-citizen-text transition-colors"
         >
           Copy Context
         </button>

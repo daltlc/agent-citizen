@@ -24,16 +24,16 @@ export default async function ProblemDetailPage({
 
   const overviewContent = (
     <div className="space-y-4">
-      <p className="whitespace-pre-wrap text-gray-300">
+      <p className="whitespace-pre-wrap text-citizen-sand">
         {problem.description}
       </p>
 
       {problem.createdBy && (
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-citizen-text-dim">
           Created by{" "}
           <Link
             href={`/u/${problem.createdBy.username}`}
-            className="text-gray-300 hover:text-white"
+            className="text-citizen-sand hover:text-citizen-text"
           >
             {problem.createdBy.username}
           </Link>
@@ -53,7 +53,7 @@ export default async function ProblemDetailPage({
         </Link>
       </div>
       {relatedProjects.length === 0 ? (
-        <p className="mt-4 text-sm text-gray-500">
+        <p className="mt-4 text-sm text-citizen-text-dim">
           No projects yet. Start one to tackle this problem.
         </p>
       ) : (
@@ -62,11 +62,11 @@ export default async function ProblemDetailPage({
             <Link
               key={project.id}
               href={`/projects/${project.slug}`}
-              className="block rounded-lg border border-gray-800 bg-gray-900/50 p-4 transition-colors hover:border-gray-700"
+              className="block rounded-lg border border-citizen-border bg-citizen-elevated p-4 transition-colors hover:border-citizen-border-subtle"
             >
               <h3 className="font-medium">{project.name}</h3>
               {project.description && (
-                <p className="mt-1 text-sm text-gray-400 line-clamp-2">
+                <p className="mt-1 text-sm text-citizen-text-muted line-clamp-2">
                   {project.description}
                 </p>
               )}
@@ -82,7 +82,7 @@ export default async function ProblemDetailPage({
       <div>
         <Link
           href="/problems"
-          className="text-sm text-gray-500 hover:text-gray-300"
+          className="text-sm text-citizen-text-dim hover:text-citizen-sand"
         >
           &larr; Back to Problems
         </Link>

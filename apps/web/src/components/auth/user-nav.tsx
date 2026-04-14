@@ -22,7 +22,7 @@ export function UserNav({ username, avatarUrl }: UserNavProps) {
     <div className="flex items-center gap-3">
       <a
         href={`/u/${username}`}
-        className="flex items-center gap-2 text-sm text-gray-300 hover:text-white"
+        className="flex items-center gap-2 text-sm text-citizen-sand hover:text-citizen-text"
       >
         {avatarUrl ? (
           <Image
@@ -33,7 +33,7 @@ export function UserNav({ username, avatarUrl }: UserNavProps) {
             className="rounded-full"
           />
         ) : (
-          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gray-700 text-xs font-medium">
+          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-citizen-border-subtle text-xs font-medium">
             {username[0]?.toUpperCase()}
           </div>
         )}
@@ -41,7 +41,7 @@ export function UserNav({ username, avatarUrl }: UserNavProps) {
       </a>
       <button
         onClick={handleSignOut}
-        className="text-sm text-gray-500 hover:text-gray-300"
+        className="text-sm text-citizen-text-dim hover:text-citizen-sand"
       >
         Sign out
       </button>
