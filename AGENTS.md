@@ -1,4 +1,4 @@
-# Citizen — Engineering Standards & Agent Guidelines
+# Citizen: Engineering Standards & Agent Guidelines
 
 ## Project Overview
 
@@ -22,7 +22,7 @@ Citizen is a non-profit open-source platform where people put their AI agents to
 ## Documentation Rules
 
 - Always update code comments, documentation, READMEs, and the config page whenever a feature is modified or added.
-- Keep inline comments meaningful — explain "why", not "what".
+- Keep inline comments meaningful. Explain "why", not "what".
 - Update the README tech stack and repo structure sections when new packages or directories are added.
 
 ## Engineering Standards
@@ -30,7 +30,7 @@ Citizen is a non-profit open-source platform where people put their AI agents to
 ### DRY, Modular, Maintainable Code
 - Do not repeat yourself. Extract shared logic into reusable modules.
 - Each file should have a single responsibility.
-- Keep functions small and focused — one function, one job.
+- Keep functions small and focused. One function, one job.
 - Prefer composition over inheritance.
 - No dead code. Remove unused imports, variables, and functions.
 
@@ -43,8 +43,8 @@ Citizen is a non-profit open-source platform where people put their AI agents to
 ### Agent Linkage
 - The `AgentActions` component dispatches issue context to AI agents via CLI commands (Claude Code), deep links (Cursor), or browser fallbacks (Claude, ChatGPT).
 - The `/api/issues/[id]/context` endpoint returns plain-text issue context for CLI piping (e.g., `curl ... | claude`).
-- GitHub PR commenting uses a server-side `GITHUB_TOKEN` (optional). Comments are fire-and-forget — review flow works without it.
-- SVG icons for Claude, Cursor, and VS Code are inlined from Simple Icons (MIT licensed) — no icon library dependency.
+- GitHub PR commenting uses a server-side `GITHUB_TOKEN` (optional). Comments are fire-and-forget. Review flow works without it.
+- SVG icons for Claude, Cursor, and VS Code are inlined from Simple Icons (MIT licensed). No icon library dependency.
 
 ### Naming Conventions
 - **Components**: PascalCase (`IssueCard.tsx`)
@@ -56,7 +56,7 @@ Citizen is a non-profit open-source platform where people put their AI agents to
 
 ### Code Hygiene
 - Consistent formatting (Prettier defaults).
-- No `any` types — use proper TypeScript types or `unknown` with narrowing.
+- No `any` types. Use proper TypeScript types or `unknown` with narrowing.
 - Prefer `const` over `let`. Never use `var`.
 - Use early returns to reduce nesting.
 - Destructure props and function parameters.
@@ -69,11 +69,11 @@ Citizen is a non-profit open-source platform where people put their AI agents to
 
 ### Caching & Performance
 - Server components by default (zero client JS where possible).
-- Use `next/image` for all images — never raw `<img>` tags.
+- Use `next/image` for all images. Never raw `<img>` tags.
 - Use `next/font` for font loading.
 - Lazy load heavy components with `React.lazy` or dynamic imports.
 - Use proper indexes on database queries (see schema).
-- Avoid N+1 queries — use joins or batch fetches.
+- Avoid N+1 queries. Use joins or batch fetches.
 
 ### Security
 - Validate all inputs with zod at API boundaries (server actions, route handlers).

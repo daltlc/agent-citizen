@@ -8,7 +8,7 @@ export async function Header() {
   try {
     citizen = await getCurrentCitizen();
   } catch {
-    // Auth or DB not configured yet — render without user
+    // Auth or DB not configured yet, render without user
   }
 
   return (

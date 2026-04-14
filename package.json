@@ -6,6 +6,7 @@
     "dev": "pnpm --filter web dev",
     "build": "pnpm --filter web build",
     "lint": "pnpm --filter web lint",
-    "test": "pnpm --filter web test"
+    "test": "pnpm --filter web test",
+    "seed": "pnpm --filter web seed"
   }
 }

@@ -2,7 +2,7 @@ import { parsePrUrl } from "./parse-pr-url";
 
 /**
  * Posts a comment on a GitHub pull request.
- * Uses a server-side GITHUB_TOKEN (bot/PAT) — no user token needed.
+ * Uses a server-side GITHUB_TOKEN (bot/PAT). No user token needed.
  * Fails silently if token is not configured or API call fails.
  */
 export async function commentOnPr(

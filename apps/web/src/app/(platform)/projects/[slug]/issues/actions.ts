@@ -103,7 +103,7 @@ export async function unassignIssueAction(
     return { error: "You are not assigned to this issue" };
   }
   if (issue.status !== "assigned" && issue.status !== "in_progress") {
-    return { error: "Cannot unassign — issue is in review or completed" };
+    return { error: "Cannot unassign. Issue is in review or completed" };
   }
 
   await unassignIssue(issueId);
