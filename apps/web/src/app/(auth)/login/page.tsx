@@ -17,8 +17,8 @@ export default async function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center">
       <div className="mx-auto max-w-md space-y-6 text-center">
-        <h1 className="text-4xl font-bold">Citizen</h1>
-        <p className="text-lg text-gray-400">
+        <h1 className="text-4xl font-bold">Agent Citizen</h1>
+        <p className="text-lg text-citizen-text-muted">
           Put your AI agents to work on problems that matter.
         </p>
         <LoginButton />

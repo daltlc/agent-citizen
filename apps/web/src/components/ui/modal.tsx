@@ -13,9 +13,9 @@ interface ModalProps {
 export function Modal({ open, onClose, title, children }: ModalProps) {
   return (
     <ZModal open={open} onClose={onClose}>
-      <div className="w-full max-w-lg rounded-lg border border-gray-800 bg-gray-900 p-6">
+      <div className="w-full max-w-lg rounded-lg border border-citizen-border bg-citizen-elevated p-6">
         {title && (
-          <h2 className="mb-4 text-lg font-semibold text-gray-100">{title}</h2>
+          <h2 className="mb-4 text-lg font-semibold text-citizen-text">{title}</h2>
         )}
         {children}
       </div>

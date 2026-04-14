@@ -52,7 +52,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const variantClasses: Record<ToastType, string> = {
     success: "bg-green-900 text-green-100",
     error: "bg-red-900 text-red-100",
-    info: "bg-gray-800 text-gray-100",
+    info: "bg-citizen-elevated text-citizen-text",
   };
 
   return (

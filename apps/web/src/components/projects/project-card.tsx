@@ -31,11 +31,11 @@ export function ProjectCard({
           </Badge>
         )}
         {owner && (
-          <span className="text-xs text-gray-500">by {owner.username}</span>
+          <span className="text-xs text-citizen-text-dim">by {owner.username}</span>
         )}
       </div>
       {problem && (
-        <p className="mt-2 text-xs text-gray-500">
+        <p className="mt-2 text-xs text-citizen-text-dim">
           Solving: {problem.title}
         </p>
       )}

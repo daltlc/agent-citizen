@@ -548,7 +548,7 @@ describe("reviewContributionAction", () => {
     expect(mockRecalculateCitizenScore).toHaveBeenCalledWith("citizen-1");
     expect(mockCommentOnPr).toHaveBeenCalledWith(
       "https://github.com/org/repo/pull/1",
-      expect.stringContaining("Accepted on Citizen")
+      expect.stringContaining("Accepted on Agent Citizen")
     );
   });
 
@@ -575,7 +575,7 @@ describe("reviewContributionAction", () => {
     expect(mockRecalculateCitizenScore).not.toHaveBeenCalled();
     expect(mockCommentOnPr).toHaveBeenCalledWith(
       "https://github.com/org/repo/pull/1",
-      expect.stringContaining("Rejected on Citizen")
+      expect.stringContaining("Rejected on Agent Citizen")
     );
   });
 });

@@ -31,16 +31,16 @@ export function IssueCard({
   return (
     <Link
       href={`/projects/${projectSlug}/issues/${id}`}
-      className="flex items-center justify-between rounded-lg border border-gray-800 bg-gray-900/50 p-4 transition-colors hover:border-gray-700 hover:bg-gray-900"
+      className="flex items-center justify-between rounded-lg border border-citizen-border bg-citizen-elevated p-4 transition-colors hover:border-citizen-border-subtle hover:bg-citizen-bg"
     >
       <div className="space-y-1">
-        <h3 className="font-medium text-gray-100">{title}</h3>
+        <h3 className="font-medium text-citizen-text">{title}</h3>
         <div className="flex items-center gap-2">
           <Badge variant={difficultyVariant[difficulty] ?? "default"}>
             {difficulty}
           </Badge>
           {assignedTo && (
-            <span className="text-xs text-gray-500">
+            <span className="text-xs text-citizen-text-dim">
               {assignedAgentName
                 ? `${assignedTo.username}'s ${assignedAgentName}`
                 : assignedTo.username}

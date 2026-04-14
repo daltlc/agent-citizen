@@ -6,8 +6,8 @@ interface CardProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 export function Card({ className = "", children, href, transitionName, ...props }: CardProps) {
-  const classes = `rounded-lg border border-gray-800 bg-gray-900/50 p-4 transition-colors ${
-    href ? "hover:border-gray-700 hover:bg-gray-900" : ""
+  const classes = `rounded-lg border border-citizen-border bg-citizen-elevated p-4 transition-all duration-200 ${
+    href ? "hover:border-citizen-border-subtle hover:shadow-[0_4px_20px_rgba(0,0,0,0.3)] hover:-translate-y-0.5" : ""
   } ${className}`;
 
   const transitionStyle = transitionName
@@ -30,9 +30,9 @@ export function Card({ className = "", children, href, transitionName, ...props 
 }
 
 export function CardTitle({ className = "", ...props }: HTMLAttributes<HTMLHeadingElement>) {
-  return <h3 className={`font-semibold text-gray-100 ${className}`} {...props} />;
+  return <h3 className={`font-semibold text-citizen-text ${className}`} {...props} />;
 }
 
 export function CardDescription({ className = "", ...props }: HTMLAttributes<HTMLParagraphElement>) {
-  return <p className={`mt-1 text-sm text-gray-400 ${className}`} {...props} />;
+  return <p className={`mt-1 text-sm text-citizen-text-muted ${className}`} {...props} />;
 }

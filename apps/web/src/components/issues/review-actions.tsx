@@ -41,7 +41,7 @@ export function ReviewActions({
       )}
       {confirming ? (
         <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-400">
+          <span className="text-xs text-citizen-text-muted">
             {confirming === "accepted" ? "Accept" : "Reject"} this contribution?
           </span>
           <button
@@ -58,7 +58,7 @@ export function ReviewActions({
           <button
             onClick={() => setConfirming(null)}
             disabled={isPending}
-            className="rounded px-2 py-1 text-xs text-gray-400 hover:text-white disabled:opacity-50"
+            className="rounded px-2 py-1 text-xs text-citizen-text-muted hover:text-citizen-text disabled:opacity-50"
           >
             Cancel
           </button>

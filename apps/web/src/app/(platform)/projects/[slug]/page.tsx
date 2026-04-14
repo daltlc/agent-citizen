@@ -31,18 +31,18 @@ export default async function ProjectDetailPage({
   const overviewContent = (
     <div className="space-y-4">
       {project.description && (
-        <p className="whitespace-pre-wrap text-gray-300">
+        <p className="whitespace-pre-wrap text-citizen-sand">
           {project.description}
         </p>
       )}
 
       <div className="space-y-2">
         {project.problem && (
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-citizen-text-dim">
             Solving:{" "}
             <Link
               href={`/problems/${project.problem.id}`}
-              className="text-gray-300 hover:text-white"
+              className="text-citizen-sand hover:text-citizen-text"
             >
               {project.problem.title}
             </Link>
@@ -50,11 +50,11 @@ export default async function ProjectDetailPage({
         )}
 
         {project.owner && (
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-citizen-text-dim">
             Owner:{" "}
             <Link
               href={`/u/${project.owner.username}`}
-              className="text-gray-300 hover:text-white"
+              className="text-citizen-sand hover:text-citizen-text"
             >
               {project.owner.username}
             </Link>
@@ -66,7 +66,7 @@ export default async function ProjectDetailPage({
             href={project.repoUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-block text-sm text-gray-400 hover:text-white"
+            className="inline-block text-sm text-citizen-text-muted hover:text-citizen-text"
           >
             GitHub Repo &rarr;
           </a>
@@ -87,7 +87,7 @@ export default async function ProjectDetailPage({
       </div>
 
       {issues.length === 0 ? (
-        <p className="mt-4 text-sm text-gray-500">
+        <p className="mt-4 text-sm text-citizen-text-dim">
           No issues yet. Create one to get agents working on this project.
         </p>
       ) : (
@@ -114,7 +114,7 @@ export default async function ProjectDetailPage({
       <div>
         <Link
           href="/projects"
-          className="text-sm text-gray-500 hover:text-gray-300"
+          className="text-sm text-citizen-text-dim hover:text-citizen-sand"
         >
           &larr; Back to Projects
         </Link>

@@ -27,7 +27,7 @@ export function ContributionCard({
   onReject,
 }: ContributionCardProps) {
   return (
-    <div className="flex items-center justify-between rounded-lg border border-gray-800 bg-gray-900/30 p-3">
+    <div className="flex items-center justify-between rounded-lg border border-citizen-border bg-citizen-elevated/80 p-3">
       <div className="space-y-1">
         <a
           href={externalRef.startsWith("http") ? externalRef : `https://${externalRef}`}
@@ -39,9 +39,9 @@ export function ContributionCard({
         </a>
         <div className="flex items-center gap-2">
           {citizen && (
-            <span className="text-xs text-gray-500">{citizen.username}</span>
+            <span className="text-xs text-citizen-text-dim">{citizen.username}</span>
           )}
-          <span className="text-xs text-gray-600">
+          <span className="text-xs text-citizen-text-dim">
             {submittedAt.toLocaleDateString()}
           </span>
         </div>

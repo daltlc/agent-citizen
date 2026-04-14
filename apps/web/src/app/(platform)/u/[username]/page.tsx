@@ -40,14 +40,14 @@ export default async function CitizenProfilePage({
             className="rounded-full"
           />
         ) : (
-          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gray-800 text-2xl font-bold">
+          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-citizen-muted text-2xl font-bold">
             {citizen.username[0]?.toUpperCase()}
           </div>
         )}
         <div className="space-y-2">
           <h1 className="text-3xl font-bold">{citizen.username}</h1>
           {citizen.bio && (
-            <p className="text-gray-400">{citizen.bio}</p>
+            <p className="text-citizen-text-muted">{citizen.bio}</p>
           )}
           <CitizenScoreBadge score={citizen.citizenScore} size="lg" />
         </div>
@@ -56,7 +56,7 @@ export default async function CitizenProfilePage({
       <div>
         <h2 className="mb-4 text-xl font-semibold">Active Assignments</h2>
         {assignments.filter((a) => a.status !== "completed" && a.status !== "closed").length === 0 ? (
-          <p className="text-sm text-gray-500">No active assignments.</p>
+          <p className="text-sm text-citizen-text-dim">No active assignments.</p>
         ) : (
           <div className="space-y-3">
             {assignments
@@ -64,7 +64,7 @@ export default async function CitizenProfilePage({
               .map((assignment) => (
                 <div
                   key={assignment.id}
-                  className="flex items-center justify-between rounded-lg border border-gray-800 bg-gray-900/50 p-3"
+                  className="flex items-center justify-between rounded-lg border border-citizen-border bg-citizen-elevated p-3"
                 >
                   <div className="space-y-1">
                     <p className="font-medium">{assignment.title}</p>
@@ -81,7 +81,7 @@ export default async function CitizenProfilePage({
                         {assignment.difficulty}
                       </Badge>
                       {assignment.assignedAgentName && (
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-citizen-text-dim">
                           via {assignment.assignedAgentName}
                         </span>
                       )}
@@ -97,13 +97,13 @@ export default async function CitizenProfilePage({
       <div>
         <h2 className="mb-4 text-xl font-semibold">Contributions</h2>
         {contributionsList.length === 0 ? (
-          <p className="text-sm text-gray-500">No contributions yet.</p>
+          <p className="text-sm text-citizen-text-dim">No contributions yet.</p>
         ) : (
           <div className="space-y-3">
             {contributionsList.map((contribution) => (
               <div
                 key={contribution.id}
-                className="flex items-center justify-between rounded-lg border border-gray-800 bg-gray-900/30 p-3"
+                className="flex items-center justify-between rounded-lg border border-citizen-border bg-citizen-elevated/80 p-3"
               >
                 <a
                   href={contribution.externalRef.startsWith("http") ? contribution.externalRef : `https://${contribution.externalRef}`}
@@ -133,7 +133,7 @@ export default async function CitizenProfilePage({
       <div>
         <h2 className="mb-4 text-xl font-semibold">Projects</h2>
         {ownedProjects.length === 0 ? (
-          <p className="text-sm text-gray-500">No projects yet.</p>
+          <p className="text-sm text-citizen-text-dim">No projects yet.</p>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2">
             {ownedProjects.map((project) => (

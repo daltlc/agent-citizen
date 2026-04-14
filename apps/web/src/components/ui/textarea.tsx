@@ -10,14 +10,14 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     return (
       <div className="space-y-1">
         {label && (
-          <label htmlFor={id} className="block text-sm font-medium text-gray-300">
+          <label htmlFor={id} className="block text-sm font-medium text-citizen-sand">
             {label}
           </label>
         )}
         <textarea
           ref={ref}
           id={id}
-          className={`w-full rounded-lg border border-gray-700 bg-gray-900 px-3 py-2 text-sm text-gray-100 placeholder-gray-500 transition-colors focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 ${error ? "border-red-500" : ""} ${className}`}
+          className={`w-full rounded-lg border border-citizen-border bg-citizen-deep px-3 py-2 text-sm text-citizen-text placeholder-citizen-text-dim transition-colors focus:border-citizen-accent focus:outline-none focus:ring-1 focus:ring-citizen-accent/20 ${error ? "border-red-500" : ""} ${className}`}
           rows={4}
           {...props}
         />
