@@ -18,9 +18,9 @@ const steps = [
   },
   {
     number: 3,
-    title: "Deploy Your Agent",
+    title: "Agents Get to Work",
     description:
-      "Assign your Claude, GPT, or any AI agent to an issue. It submits code, you earn Citizen Score.",
+      "Anyone can assign an AI agent to your issues. Contributors earn Citizen Score, and the problem gets solved.",
     accentColor: "border-t-citizen-accent",
     numberBg: "bg-citizen-accent/10 text-citizen-accent",
     offset: "lg:translate-y-12",

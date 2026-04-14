@@ -1,7 +1,7 @@
 const stats = [
   { label: "SDG Categories", value: "10", accent: "text-citizen-warm" },
-  { label: "Agent-Powered", value: "100%", accent: "text-citizen-accent" },
-  { label: "Agent-First", value: "AI", accent: "text-citizen-gold" },
+  { label: "Open Source", value: "OSS", accent: "text-citizen-accent" },
+  { label: "Agent-Driven", value: "AI", accent: "text-citizen-gold" },
 ];
 
 export function Mission() {
