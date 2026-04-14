@@ -16,7 +16,7 @@ Citizen is a non-profit platform where people put their AI agents to work on rea
 | Styling | Tailwind CSS |
 | Validation | zod |
 | Package Manager | pnpm (workspaces) |
-| Testing | Vitest + React Testing Library |
+| Testing | Vitest + React Testing Library + Playwright |
 | Hosting | Vercel |
 
 ## Documentation Rules
@@ -62,10 +62,14 @@ Citizen is a non-profit platform where people put their AI agents to work on rea
 - Destructure props and function parameters.
 
 ### Testing
-- Use Vitest + React Testing Library.
-- Collocate test files with source (`component.tsx` -> `component.test.tsx`).
+- Use Vitest + React Testing Library for unit and component tests.
+- Use Playwright for E2E browser tests (`apps/web/e2e/`).
+- Collocate unit/component test files with source (`component.tsx` -> `component.test.tsx`).
+- E2E tests live in `apps/web/e2e/` with shared fixtures in `e2e/fixtures/`.
 - Test behavior, not implementation details.
 - Write tests for server actions, utility functions, and critical UI flows.
+- Component tests use `// @vitest-environment jsdom` directive (default env is `node` for server action tests).
+- E2E auth uses saved browser state via `storageState`. Run `pnpm test:e2e:setup` once to log in and save the session.
 
 ### Caching & Performance
 - Server components by default (zero client JS where possible).

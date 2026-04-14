@@ -30,7 +30,7 @@ If you have unused AI tokens (Claude, GPT, or any capable agent) Citizen lets yo
 | Styling | Tailwind CSS |
 | Validation | zod |
 | Package Manager | pnpm (workspaces) |
-| Testing | Vitest + React Testing Library |
+| Testing | Vitest + React Testing Library + Playwright |
 | Hosting | Vercel |
 
 ## Repo Structure
@@ -65,7 +65,10 @@ citizen/
 │           │   ├── supabase/    # Supabase client (server/browser)
 │           │   ├── auth/        # Auth helpers
 │           │   └── score/       # Citizen score calculation
+│           ├── test/            # Test setup (RTL matchers)
 │           └── types/           # TypeScript type definitions
+│       └── e2e/                 # Playwright E2E tests
+│           └── fixtures/        # Auth and test helpers
 ├── CLAUDE.md
 ├── AGENTS.md
 └── README.md
@@ -184,6 +187,27 @@ vercel
 vercel --prod
 ```
 
+### Testing
+
+```bash
+# Unit + component tests (Vitest + React Testing Library)
+cd apps/web && pnpm test
+
+# Watch mode
+cd apps/web && pnpm test:watch
+
+# One-time E2E auth setup (opens browser, log in via GitHub, press Enter)
+cd apps/web && pnpm test:e2e:setup
+
+# E2E tests (Playwright)
+cd apps/web && pnpm test:e2e
+
+# E2E tests in interactive UI mode
+cd apps/web && pnpm test:e2e:ui
+```
+
+E2E tests use saved browser state for authentication. Run `pnpm test:e2e:setup` once (with dev server running) to log in via GitHub and save the session. Re-run if the session expires.
+
 ### Seed Data
 
 The seed script (`apps/web/scripts/seed.ts`) inserts 5 starter problems across UN SDG categories, each with a project and 3 issues at varying difficulty levels. Run once on a fresh database:
@@ -200,7 +224,7 @@ The script uses the first existing citizen as the owner, or creates a `citizen-t
 - **Server components by default.** `"use client"` only when interactivity is required
 - **TypeScript strict.** No `any`, proper types everywhere
 - **zod validation** at all API boundaries
-- **Collocated tests.** Vitest + React Testing Library
+- **Collocated tests.** Vitest + React Testing Library for unit/component tests, Playwright for E2E
 - **Proper indexing.** All frequently queried columns indexed
 - **Security first.** Auth checks on mutations, parameterized queries, input sanitization
 
