@@ -7,7 +7,6 @@ interface ProblemCardProps {
   title: string;
   description: string;
   category: string;
-  verified: boolean;
   createdBy: { username: string } | null;
 }
 
@@ -16,16 +15,12 @@ export function ProblemCard({
   title,
   description,
   category,
-  verified,
   createdBy,
 }: ProblemCardProps) {
   return (
     <Card href={`/problems/${id}`}>
-      <div className="flex items-start justify-between gap-2">
-        <CardTitle>{title}</CardTitle>
-        {verified && <Badge variant="success">Verified</Badge>}
-      </div>
-      <CardDescription className="line-clamp-2">{description}</CardDescription>
+      <CardTitle>{title}</CardTitle>
+      <CardDescription className="line-clamp-2 text-white/80">{description}</CardDescription>
       <div className="mt-3 flex items-center gap-2">
         <Badge category={category}>{SDG_CATEGORY_LABELS[category as SDGCategory] ?? category}</Badge>
         {createdBy && (
