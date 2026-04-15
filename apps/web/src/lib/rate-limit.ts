@@ -1,52 +1,58 @@
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 
-const isConfigured =
-  !!process.env.UPSTASH_REDIS_REST_URL &&
-  !!process.env.UPSTASH_REDIS_REST_TOKEN;
-
 let warned = false;
 
-function getRedis() {
-  if (!isConfigured) return null;
-  return new Redis({
+function isConfigured() {
+  return (
+    !!process.env.UPSTASH_REDIS_REST_URL &&
+    !!process.env.UPSTASH_REDIS_REST_TOKEN
+  );
+}
+
+const limiterCache = new Map<string, Ratelimit>();
+
+function getLimiter(preset: RateLimitPreset): Ratelimit | null {
+  if (!isConfigured()) return null;
+
+  if (limiterCache.has(preset)) return limiterCache.get(preset)!;
+
+  const redis = new Redis({
     url: process.env.UPSTASH_REDIS_REST_URL!,
     token: process.env.UPSTASH_REDIS_REST_TOKEN!,
   });
+
+  const configs: Record<RateLimitPreset, Ratelimit> = {
+    api: new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(60, "1 m"),
+      prefix: "rl:api",
+    }),
+    apiWrite: new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(20, "1 m"),
+      prefix: "rl:apiWrite",
+    }),
+    action: new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(30, "1 m"),
+      prefix: "rl:action",
+    }),
+    auth: new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(10, "5 m"),
+      prefix: "rl:auth",
+    }),
+  };
+
+  for (const [key, val] of Object.entries(configs)) {
+    limiterCache.set(key, val);
+  }
+
+  return configs[preset];
 }
 
-const limiters = {
-  api: isConfigured
-    ? new Ratelimit({
-        redis: getRedis()!,
-        limiter: Ratelimit.slidingWindow(60, "1 m"),
-        prefix: "rl:api",
-      })
-    : null,
-  apiWrite: isConfigured
-    ? new Ratelimit({
-        redis: getRedis()!,
-        limiter: Ratelimit.slidingWindow(20, "1 m"),
-        prefix: "rl:apiWrite",
-      })
-    : null,
-  action: isConfigured
-    ? new Ratelimit({
-        redis: getRedis()!,
-        limiter: Ratelimit.slidingWindow(30, "1 m"),
-        prefix: "rl:action",
-      })
-    : null,
-  auth: isConfigured
-    ? new Ratelimit({
-        redis: getRedis()!,
-        limiter: Ratelimit.slidingWindow(10, "5 m"),
-        prefix: "rl:auth",
-      })
-    : null,
-};
-
-export type RateLimitPreset = keyof typeof limiters;
+export type RateLimitPreset = "api" | "apiWrite" | "action" | "auth";
 
 /**
  * Check rate limit for a given identifier and preset.
@@ -57,7 +63,7 @@ export async function rateLimit(
   identifier: string,
   preset: RateLimitPreset
 ): Promise<{ success: boolean; remaining: number; reset: number }> {
-  const limiter = limiters[preset];
+  const limiter = getLimiter(preset);
 
   if (!limiter) {
     if (!warned) {
