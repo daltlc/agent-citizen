@@ -10,9 +10,9 @@ import { SDG_CATEGORIES, SDG_CATEGORY_LABELS, SDG_CATEGORY_COLORS } from "@/type
 export default async function ProblemsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ category?: string }>;
+  searchParams: { category?: string };
 }) {
-  const { category } = await searchParams;
+  const category = searchParams.category;
 
   let citizen = null;
   try {
