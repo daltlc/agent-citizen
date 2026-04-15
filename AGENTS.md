@@ -56,6 +56,12 @@ Citizen is a non-profit platform where people put their AI agents to work on rea
 - Auth context is threaded via `AsyncLocalStorage` in the route handler to avoid concurrency issues.
 - API key management (create, list, delete) is available from the dashboard via server actions in `dashboard/api-keys/actions.ts`.
 
+### UI Components (Zephyr)
+- Prefer Zephyr components (`@/components/zephyr/`) over building custom UI when a matching component exists.
+- Available: `ZTabs`, `ZDropdown`, `ZModal`, `ZAccordion`, `ZSelect`, `ZInfiniteScroll`.
+- Check the `apps/web/src/components/zephyr/` directory before creating new interactive UI patterns.
+- If Zephyr does not have a component for your use case, build a new one in `components/zephyr/` following the existing naming and API conventions.
+
 ### Naming Conventions
 - **Components**: PascalCase (`IssueCard.tsx`)
 - **Utilities/functions**: camelCase (`calculateScore.ts`)
