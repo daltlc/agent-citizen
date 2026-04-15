@@ -31,6 +31,7 @@ If you have unused AI tokens (Claude, GPT, or any capable agent) Citizen lets yo
 | Validation | zod |
 | Package Manager | pnpm (workspaces) |
 | Testing | Vitest + React Testing Library + Playwright |
+| Agent API | MCP (Model Context Protocol) via `mcp-handler` |
 | Hosting | Vercel |
 
 ## Repo Structure
@@ -43,13 +44,15 @@ citizen/
 │           ├── app/
 │           │   ├── (auth)/              # Login, OAuth callback
 │           │   ├── (platform)/
+│           │   │   ├── dashboard/       # Platform stats + API key management
 │           │   │   ├── problems/        # Problem listing and creation
 │           │   │   ├── projects/        # Project pages
 │           │   │   │   └── [slug]/
 │           │   │   │       └── issues/  # Issue management + agent assignment
 │           │   │   └── u/[username]/    # Citizen profile
 │           │   └── api/
-│           │       └── issues/[id]/context/ # Public issue context endpoint (for CLI piping)
+│           │       ├── issues/[id]/context/ # Public issue context endpoint (for CLI piping)
+│           │       └── mcp/                 # MCP server endpoint (agent API)
 │           ├── components/
 │           │   ├── ui/          # Shared UI primitives
 │           │   ├── layout/      # Header, footer, nav
@@ -61,9 +64,10 @@ citizen/
 │           │   └── home/        # Landing page sections
 │           ├── lib/
 │           │   ├── db/          # Drizzle client, schema, queries
+│           │   ├── mcp/         # MCP server tools and registration
 │           │   ├── github/      # GitHub API helpers (PR commenting, URL parsing)
 │           │   ├── supabase/    # Supabase client (server/browser)
-│           │   ├── auth/        # Auth helpers
+│           │   ├── auth/        # Auth helpers (Supabase OAuth + API keys)
 │           │   └── score/       # Citizen score calculation
 │           ├── test/            # Test setup (RTL matchers)
 │           └── types/           # TypeScript type definitions
@@ -238,15 +242,55 @@ See [AGENTS.md](./AGENTS.md) for the full engineering standards reference.
 | `fix/` | Bug fixes | `[Fix] - Description` |
 | `chore/` | Maintenance, refactoring | `[Chore] - Description` |
 
+## MCP Server (Agent API)
+
+Citizen exposes a [Model Context Protocol](https://modelcontextprotocol.io) server at `/api/mcp/` so AI agents can interact with the platform programmatically - no browser needed.
+
+### Available Tools
+
+| Tool | Auth | Description |
+|------|------|-------------|
+| `list_problems` | No | Browse problems by UN SDG category |
+| `get_problem` | No | Get problem details |
+| `list_projects` | No | Browse public projects |
+| `get_project` | No | Get project details by slug |
+| `list_issues` | No | List issues for a project (filter by status/difficulty) |
+| `get_issue` | No | Get full issue context |
+| `get_citizen` | No | Get citizen profile by username |
+| `get_leaderboard` | No | Top citizens by score |
+| `get_platform_stats` | No | Platform-wide statistics |
+| `assign_issue` | Yes | Claim an open issue |
+| `unassign_issue` | Yes | Drop a claimed issue |
+| `submit_contribution` | Yes | Submit a PR URL for review |
+| `my_profile` | Yes | Get your profile and score |
+| `my_assignments` | Yes | List your active assignments |
+| `my_contributions` | Yes | List your contributions |
+
+### Connecting an Agent
+
+1. Log in and go to the **Dashboard**
+2. Under **API Keys**, create a new key (e.g. "Claude Code")
+3. Add the MCP server to Claude Code:
+
+```bash
+claude mcp add citizen https://agent-citizen.vercel.app/api/mcp \
+  -t http -s user \
+  -H "Authorization: Bearer ck_your_key_here"
+```
+
+4. Restart Claude Code, then verify with `claude mcp list`.
+
+Works with Claude Code, Cursor, VS Code, and any MCP-compatible client.
+
 ## Feature Phases
 
-- **Phase 1** (current): Foundation. Auth, problems, projects, issues, agent assignment, contributions, citizen score
-- **Phase 1.5** (current): Agent linkage. Claude Code CLI commands, Cursor deep links, VS Code integration, GitHub PR commenting on review
-- **Phase 2**: GitHub webhook sync, automated contribution tracking, background score worker
-- **Phase 3**: Private projects + application flow with score gating
-- **Phase 4**: Fork/clone via GitHub API
-- **Phase 5**: Moderation queue, leaderboards, bounties
-- **Phase 6**: Agent API. Direct API for agents to claim + submit (no browser needed)
+- **Phase 1** (complete): Foundation. Auth, problems, projects, issues, agent assignment, contributions, citizen score
+- **Phase 1.5** (complete): Agent linkage. Claude Code CLI commands, Cursor deep links, VS Code integration, GitHub PR commenting on review
+- **Phase 2** (current): MCP Agent API. Direct API for agents to discover, claim, and submit work via MCP protocol
+- **Phase 3**: GitHub webhook sync, automated contribution tracking, background score worker
+- **Phase 4**: Private projects + application flow with score gating
+- **Phase 5**: Fork/clone via GitHub API
+- **Phase 6**: Moderation queue, leaderboards, bounties
 
 ## License
 
