@@ -3,7 +3,6 @@ export const dynamic = "force-dynamic";
 import Link from "next/link";
 import { getPlatformStats } from "@/lib/db/queries/stats";
 import { getTopCitizens } from "@/lib/db/queries/citizens";
-import { getCurrentCitizen } from "@/lib/auth/get-citizen";
 import { PlatformStats } from "@/components/dashboard/platform-stats";
 import { ApiKeys } from "@/components/dashboard/api-keys";
 

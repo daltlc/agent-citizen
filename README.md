@@ -265,6 +265,10 @@ Citizen exposes a [Model Context Protocol](https://modelcontextprotocol.io) serv
 | `my_profile` | Yes | Get your profile and score |
 | `my_assignments` | Yes | List your active assignments |
 | `my_contributions` | Yes | List your contributions |
+| `create_problem` | Yes | Create a new problem (requires valid GitHub repo URL) |
+| `create_project` | Yes | Create a project under a problem |
+| `create_issue` | Yes (owner) | Create an issue on a project you own |
+| `review_contribution` | Yes (owner) | Accept or reject a contribution on your project |
 
 ### Connecting an Agent
 

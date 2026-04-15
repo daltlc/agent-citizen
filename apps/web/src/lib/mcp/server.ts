@@ -1,18 +1,25 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { getProblems, getProblemById } from "@/lib/db/queries/problems";
+import { getProblems, getProblemById, createProblem } from "@/lib/db/queries/problems";
 import {
   getProjects,
   getProjectBySlug,
+  getProjectById,
+  createProject,
+  generateUniqueSlug,
 } from "@/lib/db/queries/projects";
 import {
   getIssuesByProjectId,
   getIssueById,
+  createIssue,
   assignIssue,
   unassignIssue,
   updateIssueStatus,
 } from "@/lib/db/queries/issues";
-import { createContribution } from "@/lib/db/queries/contributions";
+import {
+  createContribution,
+  updateContributionStatus,
+} from "@/lib/db/queries/contributions";
 import {
   getCitizenByUsername,
   getCitizenActiveAssignments,
@@ -20,7 +27,10 @@ import {
   getTopCitizens,
 } from "@/lib/db/queries/citizens";
 import { getPlatformStats } from "@/lib/db/queries/stats";
-import { SDG_CATEGORIES } from "@/types/enums";
+import { recalculateCitizenScore } from "@/lib/score/calculate";
+import { parseRepoUrl, verifyRepoExists } from "@/lib/github/validate-repo";
+import { commentOnPr } from "@/lib/github/comment-on-pr";
+import { SDG_CATEGORIES, ISSUE_DIFFICULTIES } from "@/types/enums";
 
 type Citizen = {
   id: string;
@@ -332,6 +342,190 @@ export function registerTools(
 
       const contributions = await getCitizenContributions(citizen.id);
       return jsonResult(contributions);
+    }
+  );
+
+  // ── Create & Review Tools (auth required) ──────────────────────
+
+  server.tool(
+    "create_problem",
+    "Create a new problem (real-world cause) on the platform. Requires a valid public GitHub repository URL. Requires authentication via API key.",
+    {
+      title: z.string().min(3).max(200).describe("Problem title"),
+      description: z.string().min(10).max(5000).describe("Problem description"),
+      category: z.enum(SDG_CATEGORIES).describe("UN SDG category"),
+      repoUrl: z
+        .string()
+        .url()
+        .describe("GitHub repository URL (e.g. https://github.com/owner/repo)"),
+      tags: z
+        .string()
+        .optional()
+        .describe("Comma-separated tags (e.g. 'water,sensors,iot')"),
+    },
+    async ({ title, description, category, repoUrl, tags }) => {
+      const citizen = getCitizen();
+      if (!citizen)
+        return errorResult(
+          "Authentication required. Provide an API key via Authorization header."
+        );
+
+      const parsed = parseRepoUrl(repoUrl);
+      if (!parsed)
+        return errorResult(
+          "Invalid GitHub repository URL. Must be https://github.com/owner/repo"
+        );
+
+      const exists = await verifyRepoExists(parsed.owner, parsed.repo);
+      if (!exists)
+        return errorResult(
+          `GitHub repository ${parsed.owner}/${parsed.repo} not found.`
+        );
+
+      const tagList = tags
+        ? tags
+            .split(",")
+            .map((t) => t.trim())
+            .filter(Boolean)
+        : [];
+
+      const problem = await createProblem({
+        title,
+        description,
+        category,
+        repoUrl,
+        tags: tagList,
+        createdBy: citizen.id,
+      });
+
+      return jsonResult({ message: "Problem created.", problem });
+    }
+  );
+
+  server.tool(
+    "create_project",
+    "Create a new project under an existing problem. Requires authentication via API key.",
+    {
+      problemId: z.string().uuid().describe("Problem ID to attach this project to"),
+      name: z.string().min(2).max(100).describe("Project name"),
+      description: z.string().min(10).max(3000).describe("Project description"),
+      repoUrl: z
+        .string()
+        .url()
+        .optional()
+        .describe("Optional GitHub repository URL"),
+    },
+    async ({ problemId, name, description, repoUrl }) => {
+      const citizen = getCitizen();
+      if (!citizen)
+        return errorResult(
+          "Authentication required. Provide an API key via Authorization header."
+        );
+
+      const problem = await getProblemById(problemId);
+      if (!problem) return errorResult("Problem not found.");
+
+      const slug = await generateUniqueSlug(name);
+      const project = await createProject({
+        problemId,
+        name,
+        slug,
+        description,
+        repoUrl,
+        ownerId: citizen.id,
+      });
+
+      return jsonResult({ message: "Project created.", project });
+    }
+  );
+
+  server.tool(
+    "create_issue",
+    "Create a new issue on a project you own. Only the project owner can create issues. Requires authentication via API key.",
+    {
+      projectSlug: z.string().describe("Project slug"),
+      title: z.string().min(3).max(200).describe("Issue title"),
+      description: z.string().min(10).max(5000).describe("Issue description"),
+      difficulty: z
+        .enum(ISSUE_DIFFICULTIES)
+        .describe("Issue difficulty level"),
+    },
+    async ({ projectSlug, title, description, difficulty }) => {
+      const citizen = getCitizen();
+      if (!citizen)
+        return errorResult(
+          "Authentication required. Provide an API key via Authorization header."
+        );
+
+      const project = await getProjectBySlug(projectSlug);
+      if (!project) return errorResult("Project not found.");
+      if (project.owner?.id !== citizen.id)
+        return errorResult("Only the project owner can create issues.");
+
+      const issue = await createIssue({
+        projectId: project.id,
+        title,
+        description,
+        difficulty,
+        createdBy: citizen.id,
+      });
+
+      return jsonResult({ message: "Issue created.", issue });
+    }
+  );
+
+  server.tool(
+    "review_contribution",
+    "Accept or reject a contribution (PR submission) on an issue you own. Only the project owner can review. Recalculates citizen score on acceptance and posts a comment on the GitHub PR. Requires authentication via API key.",
+    {
+      contributionId: z.string().uuid().describe("Contribution ID to review"),
+      issueId: z.string().uuid().describe("Issue ID the contribution belongs to"),
+      decision: z
+        .enum(["accepted", "rejected"])
+        .describe("Accept or reject the contribution"),
+    },
+    async ({ contributionId, issueId, decision }) => {
+      const citizen = getCitizen();
+      if (!citizen)
+        return errorResult(
+          "Authentication required. Provide an API key via Authorization header."
+        );
+
+      const issue = await getIssueById(issueId);
+      if (!issue) return errorResult("Issue not found.");
+
+      const project = await getProjectById(issue.projectId);
+      if (!project) return errorResult("Project not found.");
+      if (project.owner?.id !== citizen.id)
+        return errorResult("Only the project owner can review contributions.");
+
+      const contribution = await updateContributionStatus(contributionId, decision);
+
+      if (decision === "accepted") {
+        await updateIssueStatus(issueId, "completed");
+        await recalculateCitizenScore(contribution.citizenId);
+      } else {
+        await updateIssueStatus(issueId, "assigned");
+      }
+
+      // Post GitHub PR comment (fire-and-forget)
+      const issueUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/projects/${project.slug}/issues/${issueId}`;
+      if (decision === "accepted") {
+        commentOnPr(
+          contribution.externalRef,
+          `### Accepted on Agent Citizen\n\nThis contribution has been accepted by the project owner. The contributor's Citizen Score has been updated.\n\n[View on Agent Citizen](${issueUrl})`
+        );
+      } else {
+        commentOnPr(
+          contribution.externalRef,
+          `### Rejected on Agent Citizen\n\nThis contribution has been rejected by the project owner. The issue has been reopened for further work.\n\n[View on Agent Citizen](${issueUrl})`
+        );
+      }
+
+      return jsonResult({
+        message: `Contribution ${decision}.`,
+        contribution,
+      });
     }
   );
 }
