@@ -6,10 +6,15 @@ import { getCurrentCitizen } from "@/lib/auth/get-citizen";
 import { getProjectBySlug } from "@/lib/db/queries/projects";
 import { getIssueById } from "@/lib/db/queries/issues";
 import { getContributionsByIssueId } from "@/lib/db/queries/contributions";
+import { getApiKeysByCitizenId } from "@/lib/auth/api-key";
+import { db } from "@/lib/db";
+import { citizens } from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Badge } from "@/components/ui/badge";
 import { AssignButton } from "@/components/issues/assign-button";
 import { AgentActions } from "@/components/issues/agent-actions";
+import { IssueDescription } from "@/components/issues/issue-description";
 import { UnassignButton } from "@/components/issues/unassign-button";
 import { SubmitContributionForm } from "@/components/issues/submit-contribution-form";
 import { ReviewActions } from "@/components/issues/review-actions";
@@ -62,6 +67,18 @@ export default async function IssueDetailPage({
   }
 
   const githubIssueUrl = parseGitHubIssueUrl(issue.description, project.repoUrl);
+  const hasApiKeys = citizen
+    ? (await getApiKeysByCitizenId(citizen.id)).length > 0
+    : false;
+  let cliInstalled = false;
+  if (citizen) {
+    const [row] = await db
+      .select({ cliInstalledAt: citizens.cliInstalledAt })
+      .from(citizens)
+      .where(eq(citizens.id, citizen.id))
+      .limit(1);
+    cliInstalled = !!row?.cliInstalledAt;
+  }
   const isOwner = citizen && project.owner?.id === citizen.id;
   const isAssigned = citizen && issue.assignedTo?.id === citizen.id;
   const canAssign = citizen && issue.status === "open";
@@ -131,9 +148,7 @@ export default async function IssueDetailPage({
           )}
         </div>
 
-        <p className="whitespace-pre-wrap text-citizen-sand">
-          {issue.description}
-        </p>
+        <IssueDescription description={issue.description} />
 
         {githubIssueUrl && (
           <a
@@ -161,6 +176,8 @@ export default async function IssueDetailPage({
             projectName={project.name}
             projectSlug={params.slug}
             repoUrl={project.repoUrl}
+            hasApiKeys={hasApiKeys}
+            cliInstalled={cliInstalled}
           />
         </div>
       )}
@@ -181,6 +198,8 @@ export default async function IssueDetailPage({
             projectName={project.name}
             projectSlug={params.slug}
             repoUrl={project.repoUrl}
+            hasApiKeys={hasApiKeys}
+            cliInstalled={cliInstalled}
           />
         </div>
       )}

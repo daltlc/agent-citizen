@@ -1,8 +1,10 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
 import { ZDropdown } from "@/components/zephyr/z-dropdown";
+import { McpSetupModal, hasCompletedSetup, type Tool } from "./mcp-setup-modal";
 
 interface AgentActionsProps {
   issueId: string;
@@ -11,6 +13,8 @@ interface AgentActionsProps {
   projectName: string;
   projectSlug: string;
   repoUrl: string | null;
+  hasApiKeys?: boolean;
+  cliInstalled?: boolean;
 }
 
 // SVG paths from Simple Icons (MIT licensed)
@@ -38,11 +42,77 @@ function VSCodeIcon({ className }: { className?: string }) {
   );
 }
 
+function TerminalIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-label="Terminal">
+      <polyline points="4 17 10 11 4 5" />
+      <line x1="12" y1="19" x2="20" y2="19" />
+    </svg>
+  );
+}
+
+const PREFERRED_TOOL_KEY = "citizen-preferred-tool";
+
+function getPreferredTool(): Tool | null {
+  if (typeof window === "undefined") return null;
+  const stored = localStorage.getItem(PREFERRED_TOOL_KEY);
+  if (stored && ["claude-code", "cursor", "opencode", "vscode"].includes(stored)) {
+    return stored as Tool;
+  }
+  return null;
+}
+
+function setPreferredTool(tool: Tool) {
+  localStorage.setItem(PREFERRED_TOOL_KEY, tool);
+}
+
+function buildMcpPrompt(issueId: string, projectSlug: string): string {
+  return `Use the Citizen MCP server to work on issue ${issueId} in project "${projectSlug}".
+
+1. Call get_issue with issueId "${issueId}" to read the full context.
+2. Call assign_issue to claim it (use your preferred agent name).
+3. Clone the repository, create a branch, and solve the issue.
+4. Commit your changes, push the branch, and open a pull request.
+5. Call submit_contribution with your PR URL to complete the task.`;
+}
+
 function shellEscape(str: string): string {
   return "'" + str.replace(/'/g, "'\\''") + "'";
 }
 
-function buildContext({
+function buildCitizenProtocolUrl(
+  issueId: string,
+  projectSlug: string,
+  tool: string,
+  repoUrl: string | null,
+): string {
+  const params = new URLSearchParams({
+    issue: issueId,
+    project: projectSlug,
+    tool,
+  });
+  if (repoUrl) params.set("repo", repoUrl);
+  return `citizen://work?${params.toString()}`;
+}
+
+function buildCursorDeepLink(issueId: string, projectSlug: string): string {
+  const prompt = buildMcpPrompt(issueId, projectSlug);
+  return `cursor://anysphere.cursor-deeplink/prompt?text=${encodeURIComponent(prompt)}`;
+}
+
+function buildFallbackCommand(tool: Tool, issueId: string, projectSlug: string): string {
+  const prompt = buildMcpPrompt(issueId, projectSlug);
+  switch (tool) {
+    case "claude-code":
+      return `claude -p ${shellEscape(prompt)}`;
+    case "opencode":
+      return `opencode -p ${shellEscape(prompt)}`;
+    default:
+      return prompt;
+  }
+}
+
+function buildStaticContext({
   issueTitle,
   issueDescription,
   projectName,
@@ -72,55 +142,42 @@ function buildContext({
   return parts.join("\n");
 }
 
-function buildClaudeCodeCommand({
-  issueTitle,
-  issueDescription,
-  projectName,
-  repoUrl,
-}: Pick<AgentActionsProps, "issueTitle" | "issueDescription" | "projectName" | "repoUrl">) {
-  const prompt = `You are working on the Agent Citizen project '${projectName}'.
-
-## Issue: ${issueTitle}
-
-### Description
-
-${issueDescription}
-
-Solve this issue and commit your changes to a new branch.`;
-
-  const clonePart = repoUrl
-    ? `git clone ${repoUrl} && cd ${repoUrl.split("/").pop()?.replace(/\.git$/, "") ?? "repo"} && `
-    : "";
-
-  return `${clonePart}claude -p ${shellEscape(prompt)}`;
+interface ToolDef {
+  id: Tool;
+  label: string;
+  icon: typeof ClaudeIcon;
+  mcpCapable: true;
 }
 
-function buildCursorDeepLink({
-  issueTitle,
-  issueDescription,
-  projectName,
-  repoUrl,
-}: Pick<AgentActionsProps, "issueTitle" | "issueDescription" | "projectName" | "repoUrl">) {
-  const prompt = `You are working on the Agent Citizen project '${projectName}'.
-Repository: ${repoUrl ?? "not linked"}
-
-## Issue: ${issueTitle}
-
-### Description
-
-${issueDescription}
-
-Solve this issue and commit your changes to a new branch.`;
-
-  // Cursor deep links have an 8000 char limit
-  const truncated = prompt.length > 7500 ? prompt.slice(0, 7500) + "\n\n[Description truncated. See full issue on Agent Citizen]" : prompt;
-
-  return `cursor://anysphere.cursor-deeplink/prompt?text=${encodeURIComponent(truncated)}`;
+interface BrowserToolDef {
+  id: string;
+  label: string;
+  mcpCapable: false;
 }
+
+const MCP_TOOLS: ToolDef[] = [
+  { id: "claude-code", label: "Claude Code", icon: ClaudeIcon, mcpCapable: true },
+  { id: "cursor", label: "Cursor", icon: CursorIcon, mcpCapable: true },
+  { id: "opencode", label: "OpenCode", icon: TerminalIcon, mcpCapable: true },
+  { id: "vscode", label: "VS Code", icon: VSCodeIcon, mcpCapable: true },
+];
+
+const BROWSER_TOOLS: BrowserToolDef[] = [
+  { id: "claude-browser", label: "Claude (Browser)", mcpCapable: false },
+  { id: "chatgpt", label: "ChatGPT", mcpCapable: false },
+];
 
 export function AgentActions(props: AgentActionsProps) {
   const { showToast } = useToast();
-  const context = buildContext(props);
+  const [preferredTool, setPreferred] = useState<Tool | null>(null);
+  const [setupModal, setSetupModal] = useState<{ open: boolean; tool: Tool }>({
+    open: false,
+    tool: "claude-code",
+  });
+
+  useEffect(() => {
+    setPreferred(getPreferredTool());
+  }, []);
 
   async function copyToClipboard(text: string, message: string) {
     try {
@@ -131,106 +188,141 @@ export function AgentActions(props: AgentActionsProps) {
     }
   }
 
-  function handleCopyClaudeCode() {
-    const cmd = buildClaudeCodeCommand(props);
-    copyToClipboard(cmd, "Claude Code command copied. Paste into your terminal");
+  function handleMcpTool(tool: Tool) {
+    setPreferredTool(tool);
+    setPreferred(tool);
+
+    if (!hasCompletedSetup(tool)) {
+      setSetupModal({ open: true, tool });
+      return;
+    }
+
+    launchTool(tool);
   }
 
-  function handleOpenInCursor() {
-    window.open(buildCursorDeepLink(props), "_self");
-  }
+  function launchTool(tool: Tool) {
+    const { issueId, projectSlug, repoUrl } = props;
 
-  function handleOpenInVSCode() {
-    if (props.repoUrl) {
-      window.open(`vscode://vscode.git/clone?url=${encodeURIComponent(props.repoUrl)}`, "_self");
+    if (props.cliInstalled) {
+      // CLI is registered in the DB. Open citizen:// directly.
+      const citizenUrl = buildCitizenProtocolUrl(issueId, projectSlug, tool, repoUrl);
+      window.location.href = citizenUrl;
+      showToast(`Launching ${MCP_TOOLS.find((t) => t.id === tool)?.label ?? tool}...`, "success");
+      return;
+    }
+
+    // No CLI installed. Use tool-specific fallbacks.
+    switch (tool) {
+      case "cursor":
+        window.open(buildCursorDeepLink(issueId, projectSlug), "_self");
+        break;
+      case "vscode":
+        if (repoUrl) {
+          window.open(`vscode://vscode.git/clone?url=${encodeURIComponent(repoUrl)}`, "_self");
+        }
+        copyToClipboard(
+          buildMcpPrompt(issueId, projectSlug),
+          "MCP prompt copied. Paste into Copilot chat in VS Code. For one-click launch, run: npx @citizen/cli setup --key <your-key>",
+        );
+        break;
+      default:
+        copyToClipboard(
+          buildFallbackCommand(tool, issueId, projectSlug),
+          "Command copied. For one-click launch, run: npx @citizen/cli setup --key <your-key>",
+        );
     }
   }
 
-  async function handleOpenInClaude() {
-    try {
-      await navigator.clipboard.writeText(context);
-      showToast("Context copied. Paste it into Claude", "success");
-    } catch {
-      // Still open even if copy fails
+  async function handleBrowserTool(toolId: string) {
+    const context = buildStaticContext(props);
+
+    if (toolId === "claude-browser") {
+      await copyToClipboard(context, "Context copied. Paste it into Claude");
+      window.open("https://claude.ai/new", "_blank");
+    } else if (toolId === "chatgpt") {
+      await copyToClipboard(context, "Context copied. Paste it into ChatGPT");
+      window.open("https://chat.openai.com/", "_blank");
     }
-    window.open("https://claude.ai/new", "_blank");
   }
 
-  async function handleOpenInChatGPT() {
-    try {
-      await navigator.clipboard.writeText(context);
-      showToast("Context copied. Paste it into ChatGPT", "success");
-    } catch {
-      // Still open even if copy fails
-    }
-    window.open("https://chat.openai.com/", "_blank");
+  function handleCopyMcpPrompt() {
+    const prompt = buildMcpPrompt(props.issueId, props.projectSlug);
+    copyToClipboard(prompt, "MCP prompt copied to clipboard");
   }
 
-  function handleCopyContext() {
-    copyToClipboard(context, "Issue context copied to clipboard");
-  }
+  const preferred = preferredTool
+    ? MCP_TOOLS.find((t) => t.id === preferredTool)
+    : null;
+  const otherMcpTools = MCP_TOOLS.filter((t) => t.id !== preferredTool);
 
   return (
-    <div className="flex flex-wrap gap-2">
-      <ZDropdown
-        trigger={
-          <Button size="sm">
-            <ClaudeIcon className="mr-1.5 h-4 w-4" />
-            Code Agents
+    <>
+      <div className="flex flex-wrap gap-2">
+        {preferred && (
+          <Button size="sm" onClick={() => handleMcpTool(preferred.id)}>
+            <preferred.icon className="mr-1.5 h-4 w-4" />
+            {preferred.label}
           </Button>
-        }
-      >
-        <button
-          onClick={handleCopyClaudeCode}
-          className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-citizen-sand hover:bg-citizen-muted hover:text-citizen-text transition-colors"
-        >
-          <ClaudeIcon className="h-4 w-4" />
-          Copy Claude Code Command
-        </button>
-        <button
-          onClick={handleOpenInCursor}
-          className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-citizen-sand hover:bg-citizen-muted hover:text-citizen-text transition-colors"
-        >
-          <CursorIcon className="h-4 w-4" />
-          Open in Cursor
-        </button>
-        {props.repoUrl && (
-          <button
-            onClick={handleOpenInVSCode}
-            className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-citizen-sand hover:bg-citizen-muted hover:text-citizen-text transition-colors"
-          >
-            <VSCodeIcon className="h-4 w-4" />
-            Open in VS Code
-          </button>
         )}
-      </ZDropdown>
 
-      <ZDropdown
-        trigger={
-          <Button size="sm" variant="secondary">
-            Browser Agents
-          </Button>
-        }
-      >
-        <button
-          onClick={handleOpenInClaude}
-          className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-citizen-sand hover:bg-citizen-muted hover:text-citizen-text transition-colors"
+        <ZDropdown
+          trigger={
+            <Button size="sm" variant={preferred ? "secondary" : "primary"}>
+              {preferred ? "Other Agents" : "Code Agents"}
+            </Button>
+          }
         >
-          Open in Claude
-        </button>
-        <button
-          onClick={handleOpenInChatGPT}
-          className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-citizen-sand hover:bg-citizen-muted hover:text-citizen-text transition-colors"
+          {(preferred ? otherMcpTools : MCP_TOOLS).map((tool) => (
+            <button
+              key={tool.id}
+              onClick={() => handleMcpTool(tool.id)}
+              className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-citizen-sand hover:bg-citizen-muted hover:text-citizen-text transition-colors"
+            >
+              <tool.icon className="h-4 w-4" />
+              {tool.label}
+            </button>
+          ))}
+          <div className="my-1 border-t border-citizen-border" />
+          <button
+            onClick={handleCopyMcpPrompt}
+            className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-citizen-text-dim hover:bg-citizen-muted hover:text-citizen-text transition-colors"
+          >
+            Copy MCP Prompt
+          </button>
+        </ZDropdown>
+
+        <ZDropdown
+          trigger={
+            <Button size="sm" variant="secondary">
+              Browser Agents
+            </Button>
+          }
         >
-          Open in ChatGPT
-        </button>
-        <button
-          onClick={handleCopyContext}
-          className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-citizen-sand hover:bg-citizen-muted hover:text-citizen-text transition-colors"
-        >
-          Copy Context
-        </button>
-      </ZDropdown>
-    </div>
+          {BROWSER_TOOLS.map((tool) => (
+            <button
+              key={tool.id}
+              onClick={() => handleBrowserTool(tool.id)}
+              className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-citizen-sand hover:bg-citizen-muted hover:text-citizen-text transition-colors"
+            >
+              {tool.label}
+            </button>
+          ))}
+          <div className="my-1 border-t border-citizen-border" />
+          <button
+            onClick={() => copyToClipboard(buildStaticContext(props), "Issue context copied to clipboard")}
+            className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-citizen-text-dim hover:bg-citizen-muted hover:text-citizen-text transition-colors"
+          >
+            Copy Context
+          </button>
+        </ZDropdown>
+      </div>
+
+      <McpSetupModal
+        open={setupModal.open}
+        onClose={() => setSetupModal((s) => ({ ...s, open: false }))}
+        tool={setupModal.tool}
+        hasApiKeys={props.hasApiKeys ?? false}
+      />
+    </>
   );
 }

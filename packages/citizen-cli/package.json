@@ -1,0 +1,21 @@
+{
+  "name": "@citizen/cli",
+  "version": "0.1.0",
+  "description": "Citizen CLI - protocol handler for launching coding tools from the web",
+  "type": "module",
+  "bin": {
+    "citizen": "./dist/index.js",
+    "citizen-handler": "./dist/handler.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "commander": "^13.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/node": "^22.0.0"
+  }
+}
