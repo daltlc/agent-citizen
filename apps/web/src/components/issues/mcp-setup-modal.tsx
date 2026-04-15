@@ -150,7 +150,7 @@ export function McpSetupModal({
             </button>
           </div>
           <p className="text-xs text-citizen-text-dim">
-            Don't have a key?{" "}
+            {"Don't have a key? "}
             <button
               onClick={() => window.open("/dashboard/api-keys", "_blank")}
               className="text-citizen-accent hover:underline"
@@ -160,10 +160,10 @@ export function McpSetupModal({
           </p>
           <div className="flex gap-2">
             <Button size="sm" onClick={handleDone}>
-              Done - I've added it
+              {"Done - I've added it"}
             </Button>
             <Button size="sm" variant="secondary" onClick={handleClose}>
-              I'll do this later
+              {"I'll do this later"}
             </Button>
           </div>
         </div>
@@ -172,8 +172,8 @@ export function McpSetupModal({
       {step === "done" && (
         <div className="space-y-4">
           <p className="text-sm text-citizen-sand">
-            You're all set. Click the {TOOL_LABELS[tool]} button on any issue to start working.
-            Your agent will connect to Citizen's MCP server and can assign itself,
+            {"You're all set. Click the "}{TOOL_LABELS[tool]}{" button on any issue to start working. "}
+            {"Your agent will connect to Citizen's MCP server and can assign itself, "}
             read issue context, and submit contributions automatically.
           </p>
           <div className="rounded-md border border-citizen-border bg-citizen-muted p-3">
