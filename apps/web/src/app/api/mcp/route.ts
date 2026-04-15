@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { AsyncLocalStorage } from "node:async_hooks";
 import { createMcpHandler } from "mcp-handler";
 import { getCitizenByApiKey } from "@/lib/auth/api-key";
