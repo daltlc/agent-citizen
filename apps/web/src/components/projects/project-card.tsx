@@ -21,7 +21,12 @@ export function ProjectCard({
 }: ProjectCardProps) {
   return (
     <Card href={`/projects/${slug}`}>
-      <CardTitle>{name}</CardTitle>
+      <div className="flex items-start justify-between gap-2">
+        <CardTitle>{name}</CardTitle>
+        {lastActivity && (
+          <span className="shrink-0 text-xs text-citizen-text-dim">Updated {lastActivity}</span>
+        )}
+      </div>
       {description && (
         <CardDescription className="line-clamp-2">{description}</CardDescription>
       )}
@@ -34,9 +39,6 @@ export function ProjectCard({
         )}
         {owner && (
           <span className="text-xs text-citizen-text-dim">by {owner.username}</span>
-        )}
-        {lastActivity && (
-          <span className="text-xs text-citizen-text-dim">Updated {lastActivity}</span>
         )}
       </div>
       {problem && (
