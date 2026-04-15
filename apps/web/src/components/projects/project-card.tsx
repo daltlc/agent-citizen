@@ -8,6 +8,7 @@ interface ProjectCardProps {
   description: string | null;
   problem: { title: string; category: string } | null;
   owner: { username: string } | null;
+  lastActivity?: string | null;
 }
 
 export function ProjectCard({
@@ -16,6 +17,7 @@ export function ProjectCard({
   description,
   problem,
   owner,
+  lastActivity,
 }: ProjectCardProps) {
   return (
     <Card href={`/projects/${slug}`}>
@@ -32,6 +34,9 @@ export function ProjectCard({
         )}
         {owner && (
           <span className="text-xs text-citizen-text-dim">by {owner.username}</span>
+        )}
+        {lastActivity && (
+          <span className="text-xs text-citizen-text-dim">Updated {lastActivity}</span>
         )}
       </div>
       {problem && (

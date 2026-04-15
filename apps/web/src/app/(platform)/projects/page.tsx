@@ -2,11 +2,15 @@ export const dynamic = "force-dynamic";
 
 import Link from "next/link";
 import { getProjects } from "@/lib/db/queries/projects";
+import { getLatestCommitDates } from "@/lib/github/latest-commit";
 import { ProjectCard } from "@/components/projects/project-card";
 import { Button } from "@/components/ui/button";
 
 export default async function ProjectsPage() {
   const projectsList = await getProjects();
+  const commitDates = await getLatestCommitDates(
+    projectsList.map((p) => p.repoUrl)
+  );
 
   return (
     <div className="space-y-6">
@@ -31,6 +35,7 @@ export default async function ProjectsPage() {
               description={project.description}
               problem={project.problem}
               owner={project.owner}
+              lastActivity={project.repoUrl ? commitDates.get(project.repoUrl) : null}
             />
           ))}
         </div>

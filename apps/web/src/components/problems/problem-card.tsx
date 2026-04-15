@@ -8,6 +8,7 @@ interface ProblemCardProps {
   description: string;
   category: string;
   repoUrl?: string | null;
+  lastActivity?: string | null;
 }
 
 function getRepoOwner(repoUrl: string): string | null {
@@ -21,6 +22,7 @@ export function ProblemCard({
   description,
   category,
   repoUrl,
+  lastActivity,
 }: ProblemCardProps) {
   const repoOwner = repoUrl ? getRepoOwner(repoUrl) : null;
 
@@ -32,6 +34,9 @@ export function ProblemCard({
         <Badge category={category}>{SDG_CATEGORY_LABELS[category as SDGCategory] ?? category}</Badge>
         {repoOwner && (
           <span className="text-xs text-citizen-text-dim">by {repoOwner}</span>
+        )}
+        {lastActivity && (
+          <span className="text-xs text-citizen-text-dim">Updated {lastActivity}</span>
         )}
       </div>
     </Card>
