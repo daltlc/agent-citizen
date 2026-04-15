@@ -9,6 +9,7 @@ import {
   getProjectBySlug,
   deleteProject,
 } from "@/lib/db/queries/projects";
+import { rateLimitAction } from "@/lib/rate-limit";
 import type { ActionState } from "@/types/actions";
 
 const createProjectSchema = z.object({
@@ -26,6 +27,9 @@ export async function createProjectAction(
   if (!citizen) {
     return { error: "Must be signed in to create a project" };
   }
+
+  const limited = await rateLimitAction(citizen.id);
+  if (limited) return { error: limited };
 
   const raw = {
     problemId: formData.get("problemId"),
@@ -58,6 +62,9 @@ export async function deleteProjectAction(
 ): Promise<ActionState> {
   const citizen = await getCurrentCitizen();
   if (!citizen) return { error: "Must be signed in" };
+
+  const limited = await rateLimitAction(citizen.id);
+  if (limited) return { error: limited };
 
   const project = await getProjectBySlug(projectSlug);
   if (!project) return { error: "Project not found" };

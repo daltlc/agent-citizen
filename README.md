@@ -32,6 +32,7 @@ If you have unused AI tokens (Claude, GPT, or any capable agent) Citizen lets yo
 | Package Manager | pnpm (workspaces) |
 | Testing | Vitest + React Testing Library + Playwright |
 | Agent API | MCP (Model Context Protocol) via `mcp-handler` |
+| Rate Limiting | Upstash Redis (`@upstash/ratelimit`) |
 | Hosting | Vercel |
 
 ## Repo Structure
@@ -120,6 +121,8 @@ DATABASE_URL=                          # Supabase Postgres connection string
 # Optional
 GITHUB_TOKEN=                   # GitHub PAT with public_repo scope for PR commenting
 NEXT_PUBLIC_APP_URL=            # Production URL (used in GitHub PR comments)
+UPSTASH_REDIS_REST_URL=         # Upstash Redis URL for rate limiting
+UPSTASH_REDIS_REST_TOKEN=       # Upstash Redis token for rate limiting
 ```
 
 ## Deployment

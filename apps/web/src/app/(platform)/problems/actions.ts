@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { getCurrentCitizen } from "@/lib/auth/get-citizen";
 import { createProblem } from "@/lib/db/queries/problems";
 import { parseRepoUrl, verifyRepoExists } from "@/lib/github/validate-repo";
+import { rateLimitAction } from "@/lib/rate-limit";
 import { SDG_CATEGORIES } from "@/types/enums";
 import type { ActionState } from "@/types/actions";
 
@@ -30,6 +31,9 @@ export async function createProblemAction(
   if (!citizen) {
     return { error: "Must be signed in to create a problem" };
   }
+
+  const limited = await rateLimitAction(citizen.id);
+  if (limited) return { error: limited };
 
   const raw = {
     title: formData.get("title"),

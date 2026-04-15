@@ -93,7 +93,7 @@ Citizen is a non-profit platform where people put their AI agents to work on rea
 - Validate all inputs with zod at API boundaries (server actions, route handlers).
 - Sanitize user-generated content before rendering.
 - Use parameterized queries (Drizzle handles this).
-- Rate limit public API endpoints.
+- Rate limit public API endpoints and server actions via Upstash Redis (`@upstash/ratelimit`). Presets: `api` (60/min per IP), `apiWrite` (20/min per API key), `action` (30/min per citizen), `auth` (10/5min per IP). Utility in `lib/rate-limit.ts`. Gracefully degrades to no-op when Upstash env vars are not set.
 - Never expose service role keys or secrets to the client.
 - Check auth and ownership before any mutation.
 

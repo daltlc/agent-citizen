@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getIssueById } from "@/lib/db/queries/issues";
 import { getProjectById } from "@/lib/db/queries/projects";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
+import { rateLimitedResponse } from "@/lib/rate-limit-response";
 
 const paramsSchema = z.object({
   id: z.string().uuid(),
@@ -11,6 +13,10 @@ export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  const ip = getClientIp(request);
+  const limit = await rateLimit(ip, "api");
+  if (!limit.success) return rateLimitedResponse(limit.reset);
+
   const parsed = paramsSchema.safeParse(params);
   if (!parsed.success) {
     return NextResponse.json({ error: "Invalid issue ID" }, { status: 400 });

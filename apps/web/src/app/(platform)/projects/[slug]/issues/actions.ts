@@ -4,6 +4,7 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getCurrentCitizen } from "@/lib/auth/get-citizen";
+import { rateLimitAction } from "@/lib/rate-limit";
 import { getProjectBySlug } from "@/lib/db/queries/projects";
 import {
   createIssue,
@@ -35,6 +36,9 @@ export async function createIssueAction(
 ): Promise<ActionState> {
   const citizen = await getCurrentCitizen();
   if (!citizen) return { error: "Must be signed in" };
+
+  const limited = await rateLimitAction(citizen.id);
+  if (limited) return { error: limited };
 
   const project = await getProjectBySlug(projectSlug);
   if (!project) return { error: "Project not found" };
@@ -75,6 +79,9 @@ export async function assignIssueAction(
   const citizen = await getCurrentCitizen();
   if (!citizen) return { error: "Must be signed in" };
 
+  const limited = await rateLimitAction(citizen.id);
+  if (limited) return { error: limited };
+
   const issue = await getIssueById(issueId);
   if (!issue) return { error: "Issue not found" };
   if (issue.status !== "open") return { error: "Issue is not open for assignment" };
@@ -97,6 +104,9 @@ export async function unassignIssueAction(
 ): Promise<ActionState> {
   const citizen = await getCurrentCitizen();
   if (!citizen) return { error: "Must be signed in" };
+
+  const limited = await rateLimitAction(citizen.id);
+  if (limited) return { error: limited };
 
   const issue = await getIssueById(issueId);
   if (!issue) return { error: "Issue not found" };
@@ -124,6 +134,9 @@ export async function submitContributionAction(
 ): Promise<ActionState> {
   const citizen = await getCurrentCitizen();
   if (!citizen) return { error: "Must be signed in" };
+
+  const limited = await rateLimitAction(citizen.id);
+  if (limited) return { error: limited };
 
   const issue = await getIssueById(issueId);
   if (!issue) return { error: "Issue not found" };
@@ -158,6 +171,9 @@ export async function reviewContributionAction(
 ): Promise<ActionState> {
   const citizen = await getCurrentCitizen();
   if (!citizen) return { error: "Must be signed in" };
+
+  const limited = await rateLimitAction(citizen.id);
+  if (limited) return { error: limited };
 
   const issue = await getIssueById(issueId);
   if (!issue) return { error: "Issue not found" };
@@ -201,6 +217,9 @@ export async function deleteIssueAction(
 ): Promise<ActionState> {
   const citizen = await getCurrentCitizen();
   if (!citizen) return { error: "Must be signed in" };
+
+  const limited = await rateLimitAction(citizen.id);
+  if (limited) return { error: limited };
 
   const project = await getProjectBySlug(projectSlug);
   if (!project) return { error: "Project not found" };

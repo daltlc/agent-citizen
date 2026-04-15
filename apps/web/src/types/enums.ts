@@ -9,6 +9,10 @@ export const SDG_CATEGORIES = [
   "economic_access",
   "disaster_response",
   "open_data",
+  "mental_health",
+  "social_equity",
+  "sustainability",
+  "humanitarian",
 ] as const;
 
 export type SDGCategory = (typeof SDG_CATEGORIES)[number];
@@ -24,6 +28,10 @@ export const SDG_CATEGORY_LABELS: Record<SDGCategory, string> = {
   economic_access: "Economic Access",
   disaster_response: "Disaster Response",
   open_data: "Open Data",
+  mental_health: "Mental Health",
+  social_equity: "Social Equity",
+  sustainability: "Sustainability",
+  humanitarian: "Humanitarian",
 };
 
 /** Each category gets a unique color pair: [bg/border inactive, bg/border active, text] */
@@ -38,6 +46,10 @@ export const SDG_CATEGORY_COLORS: Record<SDGCategory, { bg: string; text: string
   economic_access:   { bg: "bg-yellow-900/40 border-yellow-700/50",  text: "text-yellow-300",  activeBg: "bg-yellow-500",     activeText: "text-black" },
   disaster_response: { bg: "bg-red-900/40 border-red-700/50",        text: "text-red-300",     activeBg: "bg-red-500",        activeText: "text-white" },
   open_data:         { bg: "bg-indigo-900/40 border-indigo-700/50",  text: "text-indigo-300",  activeBg: "bg-indigo-500",     activeText: "text-white" },
+  mental_health:     { bg: "bg-purple-900/40 border-purple-700/50",  text: "text-purple-300",  activeBg: "bg-purple-500",     activeText: "text-white" },
+  social_equity:     { bg: "bg-teal-900/40 border-teal-700/50",      text: "text-teal-300",    activeBg: "bg-teal-500",       activeText: "text-white" },
+  sustainability:    { bg: "bg-lime-900/40 border-lime-700/50",      text: "text-lime-300",    activeBg: "bg-lime-500",       activeText: "text-black" },
+  humanitarian:      { bg: "bg-sky-900/40 border-sky-700/50",        text: "text-sky-300",     activeBg: "bg-sky-500",        activeText: "text-white" },
 };
 
 export const ISSUE_STATUSES = [

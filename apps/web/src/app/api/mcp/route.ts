@@ -2,6 +2,8 @@ import { AsyncLocalStorage } from "node:async_hooks";
 import { createMcpHandler } from "mcp-handler";
 import { getCitizenByApiKey } from "@/lib/auth/api-key";
 import { registerTools } from "@/lib/mcp/server";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
+import { rateLimitedResponse } from "@/lib/rate-limit-response";
 
 type Citizen = {
   id: string;
@@ -35,11 +37,22 @@ const handler = createMcpHandler(
 );
 
 async function handleRequest(request: Request): Promise<Response> {
+  // Rate limit all requests by IP
+  const ip = getClientIp(request);
+  const ipLimit = await rateLimit(ip, "api");
+  if (!ipLimit.success) return rateLimitedResponse(ipLimit.reset);
+
   let citizen: Citizen | null = null;
   const authHeader = request.headers.get("authorization");
   if (authHeader?.startsWith("Bearer ")) {
     const key = authHeader.slice(7);
     citizen = await getCitizenByApiKey(key);
+
+    // Authenticated agents get a separate write limit per API key
+    if (citizen) {
+      const writeLimit = await rateLimit(`apikey:${key}`, "apiWrite");
+      if (!writeLimit.success) return rateLimitedResponse(writeLimit.reset);
+    }
   }
 
   return citizenStore.run(citizen, () => handler(request));

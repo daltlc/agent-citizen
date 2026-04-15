@@ -6,6 +6,7 @@ import {
   deleteApiKey,
   getApiKeysByCitizenId,
 } from "@/lib/auth/api-key";
+import { rateLimitAction } from "@/lib/rate-limit";
 import { z } from "zod";
 
 const createKeySchema = z.object({
@@ -18,6 +19,9 @@ export async function createApiKeyAction(
 ) {
   const citizen = await getCurrentCitizen();
   if (!citizen) return { error: "Not authenticated", key: null };
+
+  const limited = await rateLimitAction(citizen.id);
+  if (limited) return { error: limited, key: null };
 
   const parsed = createKeySchema.safeParse({
     name: formData.get("name"),
@@ -37,6 +41,9 @@ export async function deleteApiKeyAction(
 ) {
   const citizen = await getCurrentCitizen();
   if (!citizen) return { error: "Not authenticated" };
+
+  const limited = await rateLimitAction(citizen.id);
+  if (limited) return { error: limited };
 
   const keyId = formData.get("keyId") as string;
   if (!keyId) return { error: "Missing key ID" };

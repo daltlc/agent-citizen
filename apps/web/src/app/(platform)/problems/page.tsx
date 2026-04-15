@@ -10,9 +10,9 @@ import { SDG_CATEGORIES, SDG_CATEGORY_LABELS, SDG_CATEGORY_COLORS } from "@/type
 export default async function ProblemsPage({
   searchParams,
 }: {
-  searchParams: { category?: string };
+  searchParams: Promise<{ category?: string }>;
 }) {
-  const category = searchParams.category;
+  const { category } = await searchParams;
 
   let citizen = null;
   try {
@@ -78,7 +78,7 @@ export default async function ProblemsPage({
               title={problem.title}
               description={problem.description}
               category={problem.category}
-              createdBy={problem.createdBy}
+              repoUrl={problem.repoUrl}
             />
           ))}
         </div>
