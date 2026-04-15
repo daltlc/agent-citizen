@@ -11,13 +11,11 @@ const globalForDb = globalThis as unknown as {
 const client =
   globalForDb.pgClient ??
   postgres(connectionString, {
-    max: 5,
+    max: 1,
     idle_timeout: 20,
     connect_timeout: 10,
   });
 
-if (process.env.NODE_ENV !== "production") {
-  globalForDb.pgClient = client;
-}
+globalForDb.pgClient = client;
 
 export const db = drizzle(client, { schema });
