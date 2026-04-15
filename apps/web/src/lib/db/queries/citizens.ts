@@ -36,8 +36,10 @@ export async function getCitizenActiveAssignments(citizenId: string) {
       difficulty: issues.difficulty,
       projectId: issues.projectId,
       assignedAgentName: issues.assignedAgentName,
+      projectSlug: projects.slug,
     })
     .from(issues)
+    .innerJoin(projects, eq(issues.projectId, projects.id))
     .where(eq(issues.assignedTo, citizenId))
     .orderBy(desc(issues.updatedAt));
 }

@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 
 import { notFound } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 import {
   getCitizenByUsername,
   getCitizenProjects,
@@ -62,9 +63,10 @@ export default async function CitizenProfilePage({
             {assignments
               .filter((a) => a.status !== "completed" && a.status !== "closed")
               .map((assignment) => (
-                <div
+                <Link
                   key={assignment.id}
-                  className="flex items-center justify-between rounded-lg border border-citizen-border bg-citizen-elevated p-3"
+                  href={`/projects/${assignment.projectSlug}/issues/${assignment.id}`}
+                  className="flex items-center justify-between rounded-lg border border-citizen-border bg-citizen-elevated p-3 transition-colors hover:border-citizen-border-subtle hover:bg-citizen-bg"
                 >
                   <div className="space-y-1">
                     <p className="font-medium">{assignment.title}</p>
@@ -88,7 +90,7 @@ export default async function CitizenProfilePage({
                     </div>
                   </div>
                   <StatusBadge status={assignment.status as IssueStatus} />
-                </div>
+                </Link>
               ))}
           </div>
         )}
