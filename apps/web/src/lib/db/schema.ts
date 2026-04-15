@@ -133,6 +133,26 @@ export const contributions = pgTable(
   ]
 );
 
+export const apiKeys = pgTable(
+  "api_keys",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    citizenId: uuid("citizen_id")
+      .notNull()
+      .references(() => citizens.id),
+    key: text("key").notNull(),
+    name: text("name").notNull(),
+    lastUsedAt: timestamp("last_used_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    uniqueIndex("api_keys_key_idx").on(table.key),
+    index("api_keys_citizen_id_idx").on(table.citizenId),
+  ]
+);
+
 export const applications = pgTable(
   "applications",
   {

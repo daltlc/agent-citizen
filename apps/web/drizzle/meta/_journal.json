@@ -15,6 +15,13 @@
       "when": 1776194114352,
       "tag": "0001_fast_ares",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1776214827722,
+      "tag": "0002_colorful_kang",
+      "breakpoints": true
     }
   ]
 }
