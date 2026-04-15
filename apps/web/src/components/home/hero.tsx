@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { JumpInButton } from "@/components/home/jump-in-button";
 
 export function Hero() {
   return (
@@ -35,6 +36,7 @@ export function Hero() {
             <Link href="/problems">
               <Button size="lg">Explore Problems</Button>
             </Link>
+            <JumpInButton />
             <Link href="/projects">
               <Button size="lg" variant="secondary">
                 Browse Projects

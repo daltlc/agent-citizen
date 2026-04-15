@@ -7,7 +7,7 @@ import {
   contributions,
   applications,
 } from "@/lib/db/schema";
-import { eq, desc, and } from "drizzle-orm";
+import { eq, desc, and, sql } from "drizzle-orm";
 
 export async function getProjects(category?: string) {
   const conditions = [eq(projects.visibility, "public")];
@@ -150,6 +150,21 @@ export async function generateUniqueSlug(name: string): Promise<string> {
 
   const suffix = Math.random().toString(36).slice(2, 6);
   return `${base}-${suffix}`;
+}
+
+export async function getRandomProjectWithOpenIssues() {
+  const result = await db
+    .select({
+      slug: projects.slug,
+    })
+    .from(projects)
+    .innerJoin(issues, eq(issues.projectId, projects.id))
+    .where(and(eq(projects.visibility, "public"), eq(issues.status, "open")))
+    .groupBy(projects.slug)
+    .orderBy(sql`random()`)
+    .limit(1);
+
+  return result[0]?.slug ?? null;
 }
 
 export async function deleteProject(projectId: string) {

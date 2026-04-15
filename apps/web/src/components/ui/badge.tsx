@@ -65,8 +65,8 @@ export function Badge({ className = "", variant = "default", category, tag, chil
     styles = TAG_PALETTE[hashString(tag) % TAG_PALETTE.length];
   }
 
-  // Auto title-case tag text
-  const content = tag ? titleCaseChildren(children) : children;
+  // Auto title-case badge text (difficulty labels, statuses, tags, etc.)
+  const content = titleCaseChildren(children);
 
   return (
     <span
