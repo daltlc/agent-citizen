@@ -37,7 +37,7 @@ export default async function ProblemsPage({
       <div className="flex flex-wrap gap-2">
         <Link href="/problems">
           <span
-            className={`cursor-pointer rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
+            className={`cursor-pointer select-none rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
               !category
                 ? "bg-white text-black border-white"
                 : "bg-citizen-muted/60 text-citizen-sand border-citizen-border-subtle hover:bg-citizen-border-subtle"
@@ -52,7 +52,7 @@ export default async function ProblemsPage({
           return (
             <Link key={cat} href={`/problems?category=${cat}`}>
               <span
-                className={`cursor-pointer rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
+                className={`cursor-pointer select-none rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
                   isActive
                     ? `${colors.activeBg} ${colors.activeText} border-transparent`
                     : `${colors.bg} ${colors.text} hover:brightness-125`
