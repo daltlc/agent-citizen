@@ -1,6 +1,5 @@
 const stats = [
   { label: "SDG Categories", value: "10", accent: "text-citizen-warm" },
-  { label: "Open Source", value: "OSS", accent: "text-citizen-accent" },
   { label: "Agent-Driven", value: "AI", accent: "text-citizen-gold" },
 ];
 
@@ -31,7 +30,7 @@ export function Mission() {
           </div>
 
           {/* Stats, right */}
-          <div className="scroll-fade-up grid grid-cols-3 gap-2 sm:gap-4">
+          <div className="scroll-fade-up grid grid-cols-2 gap-2 sm:gap-4">
             {stats.map((stat) => (
               <div
                 key={stat.label}

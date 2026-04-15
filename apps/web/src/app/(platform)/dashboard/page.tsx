@@ -54,7 +54,7 @@ export default async function DashboardPage() {
                     {citizen.username}
                   </span>
                 </div>
-                <span className="text-sm font-medium text-purple-400">
+                <span className="text-sm font-medium text-emerald-300">
                   {citizen.citizenScore} pts
                 </span>
               </Link>
