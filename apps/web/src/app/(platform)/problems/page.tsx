@@ -2,7 +2,6 @@ export const dynamic = "force-dynamic";
 
 import Link from "next/link";
 import { getProblems } from "@/lib/db/queries/problems";
-import { getLatestCommitDates } from "@/lib/github/latest-commit";
 import { getCurrentCitizen } from "@/lib/auth/get-citizen";
 import { ProblemCard } from "@/components/problems/problem-card";
 import { Button } from "@/components/ui/button";
@@ -23,9 +22,6 @@ export default async function ProblemsPage({
   }
 
   const problemsList = await getProblems(category);
-  const commitDates = await getLatestCommitDates(
-    problemsList.map((p) => p.repoUrl)
-  );
 
   return (
     <div className="space-y-6">
@@ -82,8 +78,6 @@ export default async function ProblemsPage({
               title={problem.title}
               description={problem.description}
               category={problem.category}
-              repoUrl={problem.repoUrl}
-              lastActivity={problem.repoUrl ? commitDates.get(problem.repoUrl) : null}
             />
           ))}
         </div>
