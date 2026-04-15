@@ -16,9 +16,11 @@
     "seed": "tsx scripts/seed.ts"
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.26.0",
     "@supabase/ssr": "^0.10.2",
     "@supabase/supabase-js": "^2.103.0",
     "drizzle-orm": "^0.45.2",
+    "mcp-handler": "^1.1.0",
     "next": "14.2.35",
     "postgres": "^3.4.9",
     "react": "^18",
