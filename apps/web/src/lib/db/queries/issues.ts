@@ -15,6 +15,7 @@ export async function getIssuesByProjectId(projectId: string) {
         username: citizens.username,
       },
       assignedAgentName: issues.assignedAgentName,
+      githubIssueNumber: issues.githubIssueNumber,
       createdAt: issues.createdAt,
     })
     .from(issues)
@@ -39,6 +40,7 @@ export async function getIssueById(issueId: string) {
         avatarUrl: citizens.avatarUrl,
       },
       assignedAgentName: issues.assignedAgentName,
+      githubIssueNumber: issues.githubIssueNumber,
       createdAt: issues.createdAt,
       updatedAt: issues.updatedAt,
     })
@@ -56,6 +58,7 @@ export async function createIssue(data: {
   description: string;
   difficulty: string;
   createdBy: string;
+  githubIssueNumber?: number;
 }) {
   const [issue] = await db.insert(issues).values(data).returning();
   return issue;

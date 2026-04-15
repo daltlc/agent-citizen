@@ -29,13 +29,9 @@ import { z } from "zod";
 
 const uuidSchema = z.string().uuid();
 
-function parseGitHubIssueUrl(description: string, repoUrl: string | null): string | null {
-  const match = description.match(/GitHub Issue #(\d+)/);
-  if (!match) return null;
-  if (repoUrl) return `${repoUrl.replace(/\/$/, "")}/issues/${match[1]}`;
-  const repoMatch = description.match(/GitHub Issue #\d+\s*[-–]\s*([^\s]+\/[^\s]+)/);
-  if (repoMatch) return `https://github.com/${repoMatch[1]}/issues/${match[1]}`;
-  return null;
+function getGitHubIssueUrl(issueNumber: number | null, repoUrl: string | null): string | null {
+  if (!issueNumber || !repoUrl) return null;
+  return `${repoUrl.replace(/\/$/, "")}/issues/${issueNumber}`;
 }
 
 const difficultyVariant: Record<string, "success" | "warning" | "danger"> = {
@@ -66,7 +62,7 @@ export default async function IssueDetailPage({
     // Auth not configured
   }
 
-  const githubIssueUrl = parseGitHubIssueUrl(issue.description, project.repoUrl);
+  const githubIssueUrl = getGitHubIssueUrl(issue.githubIssueNumber, project.repoUrl);
   const hasApiKeys = citizen
     ? (await getApiKeysByCitizenId(citizen.id)).length > 0
     : false;

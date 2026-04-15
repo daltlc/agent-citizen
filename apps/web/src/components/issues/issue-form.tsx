@@ -50,6 +50,14 @@ export function IssueForm({
         placeholder="Describe what needs to be done. Be specific enough for an AI agent to work on it."
         required
       />
+      <Input
+        id="githubIssueNumber"
+        name="githubIssueNumber"
+        label="GitHub Issue Number (optional)"
+        placeholder="e.g., 7176"
+        type="number"
+        min={1}
+      />
       <Select
         id="difficulty"
         name="difficulty"

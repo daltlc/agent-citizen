@@ -30,6 +30,7 @@ import { getPlatformStats } from "@/lib/db/queries/stats";
 import { recalculateCitizenScore } from "@/lib/score/calculate";
 import { parseRepoUrl, verifyRepoExists } from "@/lib/github/validate-repo";
 import { commentOnPr } from "@/lib/github/comment-on-pr";
+import { ensurePrIssueRef } from "@/lib/github/update-pr";
 import { SDG_CATEGORIES, ISSUE_DIFFICULTIES } from "@/types/enums";
 
 type Citizen = {
@@ -295,6 +296,11 @@ export function registerTools(
 
       await updateIssueStatus(issueId, "in_review");
 
+      // If the issue is linked to a GitHub issue, ensure the PR references it
+      if (issue.githubIssueNumber) {
+        ensurePrIssueRef(prUrl, issue.githubIssueNumber);
+      }
+
       return jsonResult({
         message: "Contribution submitted for review.",
         contribution,
@@ -449,8 +455,14 @@ export function registerTools(
       difficulty: z
         .enum(ISSUE_DIFFICULTIES)
         .describe("Issue difficulty level"),
+      githubIssueNumber: z
+        .number()
+        .int()
+        .positive()
+        .optional()
+        .describe("Corresponding GitHub issue number (e.g. 7176). Optional."),
     },
-    async ({ projectSlug, title, description, difficulty }) => {
+    async ({ projectSlug, title, description, difficulty, githubIssueNumber }) => {
       const citizen = getCitizen();
       if (!citizen)
         return errorResult(
@@ -468,6 +480,7 @@ export function registerTools(
         description,
         difficulty,
         createdBy: citizen.id,
+        githubIssueNumber,
       });
 
       return jsonResult({ message: "Issue created.", issue });

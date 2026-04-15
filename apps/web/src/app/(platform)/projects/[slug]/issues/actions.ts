@@ -20,6 +20,7 @@ import {
 } from "@/lib/db/queries/contributions";
 import { recalculateCitizenScore } from "@/lib/score/calculate";
 import { commentOnPr } from "@/lib/github/comment-on-pr";
+import { ensurePrIssueRef } from "@/lib/github/update-pr";
 import { ISSUE_DIFFICULTIES } from "@/types/enums";
 import type { ActionState } from "@/types/actions";
 
@@ -27,6 +28,7 @@ const createIssueSchema = z.object({
   title: z.string().min(3).max(200),
   description: z.string().min(10).max(5000),
   difficulty: z.enum(ISSUE_DIFFICULTIES),
+  githubIssueNumber: z.coerce.number().int().positive().optional(),
 });
 
 export async function createIssueAction(
@@ -46,10 +48,12 @@ export async function createIssueAction(
     return { error: "Only the project owner can create issues" };
   }
 
+  const rawGhNumber = formData.get("githubIssueNumber");
   const result = createIssueSchema.safeParse({
     title: formData.get("title"),
     description: formData.get("description"),
     difficulty: formData.get("difficulty"),
+    githubIssueNumber: rawGhNumber ? rawGhNumber : undefined,
   });
   if (!result.success) {
     return { error: result.error.issues[0].message };
@@ -61,6 +65,7 @@ export async function createIssueAction(
     description: result.data.description,
     difficulty: result.data.difficulty,
     createdBy: citizen.id,
+    githubIssueNumber: result.data.githubIssueNumber,
   });
 
   redirect(`/projects/${projectSlug}`);
@@ -159,6 +164,12 @@ export async function submitContributionAction(
   });
 
   await updateIssueStatus(issueId, "in_review");
+
+  // If linked to a GitHub issue, ensure the PR references it
+  if (issue.githubIssueNumber) {
+    ensurePrIssueRef(result.data.externalRef, issue.githubIssueNumber);
+  }
+
   revalidatePath(`/projects/${projectSlug}/issues/${issueId}`);
   return { error: null };
 }

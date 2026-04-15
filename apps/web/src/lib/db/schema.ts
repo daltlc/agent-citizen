@@ -92,6 +92,7 @@ export const issues = pgTable(
       .references(() => citizens.id),
     assignedTo: uuid("assigned_to").references(() => citizens.id),
     assignedAgentName: text("assigned_agent_name"),
+    githubIssueNumber: integer("github_issue_number"),
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
       .notNull(),

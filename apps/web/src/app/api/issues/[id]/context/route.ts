@@ -40,6 +40,7 @@ export async function GET(
       projectName: project?.name ?? null,
       repoUrl: project?.repoUrl ?? null,
       projectSlug: project?.slug ?? null,
+      githubIssueNumber: issue.githubIssueNumber ?? null,
     });
   }
 
@@ -53,6 +54,15 @@ export async function GET(
     parts.push(`**Repository:** ${project.repoUrl}`);
   }
 
+  if (issue.githubIssueNumber) {
+    const ghUrl = project?.repoUrl
+      ? `${project.repoUrl.replace(/\/$/, "")}/issues/${issue.githubIssueNumber}`
+      : null;
+    parts.push(
+      `**GitHub Issue:** #${issue.githubIssueNumber}${ghUrl ? ` (${ghUrl})` : ""}`
+    );
+  }
+
   parts.push(
     "",
     "### Description",
@@ -64,8 +74,15 @@ export async function GET(
     "Solve this issue by making the necessary code changes. When complete:",
     "1. Create a new branch with a descriptive name",
     "2. Commit your changes with a clear commit message",
-    "3. Push and open a pull request",
   );
+
+  if (issue.githubIssueNumber) {
+    parts.push(
+      `3. Push and open a pull request that references #${issue.githubIssueNumber} (e.g. "Fixes #${issue.githubIssueNumber}" in the PR description)`
+    );
+  } else {
+    parts.push("3. Push and open a pull request");
+  }
 
   return new Response(parts.join("\n"), {
     headers: { "Content-Type": "text/plain; charset=utf-8" },
