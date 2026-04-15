@@ -70,7 +70,7 @@ export function Badge({ className = "", variant = "default", category, tag, chil
 
   return (
     <span
-      className={`inline-flex items-center rounded-full border border-transparent px-2 py-0.5 text-xs font-medium ${styles} ${className}`}
+      className={`inline-flex items-center whitespace-nowrap rounded-full border border-transparent px-2 py-0.5 text-xs font-medium ${styles} ${className}`}
       {...props}
     >
       {content}
