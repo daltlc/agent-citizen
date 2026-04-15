@@ -23,6 +23,8 @@ interface AssignButtonProps {
   projectName: string;
   projectSlug: string;
   repoUrl: string | null;
+  hasApiKeys?: boolean;
+  cliInstalled?: boolean;
 }
 
 export function AssignButton({
@@ -33,6 +35,8 @@ export function AssignButton({
   projectName,
   projectSlug,
   repoUrl,
+  hasApiKeys,
+  cliInstalled,
 }: AssignButtonProps) {
   const [state, formAction] = useFormState(action, { error: null });
   const [assigned, setAssigned] = useState(false);
@@ -53,6 +57,8 @@ export function AssignButton({
         projectName={projectName}
         projectSlug={projectSlug}
         repoUrl={repoUrl}
+        hasApiKeys={hasApiKeys}
+        cliInstalled={cliInstalled}
       />
     );
   }

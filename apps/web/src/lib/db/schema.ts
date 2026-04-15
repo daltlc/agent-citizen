@@ -18,6 +18,7 @@ export const citizens = pgTable(
     avatarUrl: text("avatar_url"),
     citizenScore: integer("citizen_score").default(0).notNull(),
     bio: text("bio"),
+    cliInstalledAt: timestamp("cli_installed_at", { withTimezone: true }),
     joinedAt: timestamp("joined_at", { withTimezone: true })
       .defaultNow()
       .notNull(),

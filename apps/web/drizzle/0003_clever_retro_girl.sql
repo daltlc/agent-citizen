@@ -1,0 +1,1 @@
+ALTER TABLE "citizens" ADD COLUMN "cli_installed_at" timestamp with time zone;

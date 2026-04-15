@@ -22,6 +22,13 @@
       "when": 1776214827722,
       "tag": "0002_colorful_kang",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1776284549131,
+      "tag": "0003_clever_retro_girl",
+      "breakpoints": true
     }
   ]
 }
