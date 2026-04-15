@@ -22,8 +22,10 @@ export default async function ProblemDetailPage({
 
   const relatedProjects = await getProjectsByProblemId(problem.id);
 
+  const topProject = relatedProjects[0] ?? null;
+
   const overviewContent = (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <p className="whitespace-pre-wrap text-white">
         {problem.description}
       </p>
@@ -38,6 +40,23 @@ export default async function ProblemDetailPage({
             {problem.createdBy.username}
           </Link>
         </p>
+      )}
+
+      {topProject && (
+        <div className="border-t border-citizen-border pt-6">
+          <h3 className="text-sm font-medium text-citizen-text-muted">Top Project</h3>
+          <Link
+            href={`/projects/${topProject.slug}`}
+            className="mt-2 block rounded-lg border border-citizen-border bg-citizen-elevated p-4 transition-colors hover:border-citizen-border-subtle"
+          >
+            <h4 className="font-medium">{topProject.name}</h4>
+            {topProject.description && (
+              <p className="mt-1 text-sm text-citizen-text-muted line-clamp-2">
+                {topProject.description}
+              </p>
+            )}
+          </Link>
+        </div>
       )}
     </div>
   );
