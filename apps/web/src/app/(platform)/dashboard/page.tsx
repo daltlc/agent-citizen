@@ -4,6 +4,7 @@ import Link from "next/link";
 import { getPlatformStats } from "@/lib/db/queries/stats";
 import { getTopCitizens } from "@/lib/db/queries/citizens";
 import { PlatformStats } from "@/components/dashboard/platform-stats";
+import { ApiKeys } from "@/components/dashboard/api-keys";
 
 export default async function DashboardPage() {
   let stats = {
@@ -61,6 +62,9 @@ export default async function DashboardPage() {
             ))}
           </div>
         )}
+      </div>
+      <div className="border-t border-citizen-border pt-6">
+        <ApiKeys />
       </div>
     </div>
   );
