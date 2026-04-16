@@ -1,4 +1,5 @@
 import { parseRepoUrl } from "./validate-repo";
+import { githubFetch } from "./client";
 
 /**
  * Fetches the date of the latest commit on the default branch for a GitHub repo.
@@ -10,21 +11,17 @@ export async function getLatestCommitDate(
   const parsed = parseRepoUrl(repoUrl);
   if (!parsed) return null;
 
-  const token = process.env.GITHUB_TOKEN;
-  const headers: Record<string, string> = {
-    Accept: "application/vnd.github+json",
-  };
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
-  }
-
   try {
-    const response = await fetch(
-      `https://api.github.com/repos/${parsed.owner}/${parsed.repo}/commits?per_page=1`,
-      { headers, signal: AbortSignal.timeout(5000), next: { revalidate: 3600 } }
+    const response = await githubFetch(
+      `/repos/${parsed.owner}/${parsed.repo}/commits?per_page=1`,
+      {
+        requireToken: false,
+        timeoutMs: 5000,
+        next: { revalidate: 3600 },
+      }
     );
 
-    if (!response.ok) return null;
+    if (!response?.ok) return null;
 
     const commits = await response.json();
     if (!Array.isArray(commits) || commits.length === 0) return null;

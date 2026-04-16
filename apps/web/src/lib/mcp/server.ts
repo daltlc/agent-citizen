@@ -31,6 +31,7 @@ import { recalculateCitizenScore } from "@/lib/score/calculate";
 import { parseRepoUrl, verifyRepoExists } from "@/lib/github/validate-repo";
 import { commentOnPr } from "@/lib/github/comment-on-pr";
 import { ensurePrIssueRef } from "@/lib/github/update-pr";
+import { syncPrStatusOnReview } from "@/lib/github/manage-pr";
 import { SDG_CATEGORIES, ISSUE_DIFFICULTIES } from "@/types/enums";
 
 type Citizen = {
@@ -534,6 +535,9 @@ export function registerTools(
           `### Rejected on Agent Citizen\n\nThis contribution has been rejected by the project owner. The issue has been reopened for further work.\n\n[View on Agent Citizen](${issueUrl})`
         );
       }
+
+      // Sync PR status on GitHub (approve or close, fire-and-forget)
+      syncPrStatusOnReview(contribution.externalRef, decision);
 
       return jsonResult({
         message: `Contribution ${decision}.`,

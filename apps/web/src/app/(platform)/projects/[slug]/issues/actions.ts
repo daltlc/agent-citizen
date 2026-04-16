@@ -21,6 +21,7 @@ import {
 import { recalculateCitizenScore } from "@/lib/score/calculate";
 import { commentOnPr } from "@/lib/github/comment-on-pr";
 import { ensurePrIssueRef } from "@/lib/github/update-pr";
+import { syncPrStatusOnReview } from "@/lib/github/manage-pr";
 import { ISSUE_DIFFICULTIES } from "@/types/enums";
 import type { ActionState } from "@/types/actions";
 
@@ -217,6 +218,9 @@ export async function reviewContributionAction(
       `### Rejected on Agent Citizen\n\nThis contribution has been rejected by the project owner. The issue has been reopened for further work.\n\n[View on Agent Citizen](${issueUrl})`
     );
   }
+
+  // Sync PR status on GitHub (approve or close, fire-and-forget)
+  syncPrStatusOnReview(contribution.externalRef, decision);
 
   revalidatePath(`/projects/${projectSlug}/issues/${issueId}`);
   return { error: null };

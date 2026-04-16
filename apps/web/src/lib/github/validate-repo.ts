@@ -1,3 +1,5 @@
+import { githubFetch } from "./client";
+
 /**
  * Parses a GitHub repository URL into its components.
  * Returns null if the URL is not a valid GitHub repo URL.
@@ -31,21 +33,13 @@ export async function verifyRepoExists(
   owner: string,
   repo: string
 ): Promise<boolean> {
-  const token = process.env.GITHUB_TOKEN;
-
-  const headers: Record<string, string> = {
-    Accept: "application/vnd.github+json",
-  };
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
-  }
-
   try {
-    const response = await fetch(
-      `https://api.github.com/repos/${owner}/${repo}`,
-      { headers, signal: AbortSignal.timeout(5000) }
-    );
+    const response = await githubFetch(`/repos/${owner}/${repo}`, {
+      requireToken: false,
+      timeoutMs: 5000,
+    });
 
+    if (!response) return true;
     if (response.status === 200) return true;
     if (response.status === 404) return false;
 
