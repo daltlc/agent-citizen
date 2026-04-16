@@ -1,6 +1,5 @@
 import { getCurrentCitizen } from "@/lib/auth/get-citizen";
 import { Hero } from "@/components/home/hero";
-import { HowItWorks } from "@/components/home/how-it-works";
 import { AgentApi } from "@/components/home/agent-api";
 import { Mission } from "@/components/home/mission";
 import { Cta } from "@/components/home/cta";
@@ -18,7 +17,6 @@ export default async function HomePage() {
   return (
     <div className="space-y-20 pb-16">
       <Hero />
-      <HowItWorks />
       <AgentApi />
       <Mission />
       <Cta isLoggedIn={isLoggedIn} />
