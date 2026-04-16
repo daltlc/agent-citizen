@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { DeleteButton } from "@/components/ui/delete-button";
 import { IssueCard } from "@/components/issues/issue-card";
 import { ProjectDetailTabs } from "@/components/projects/project-detail-tabs";
+import { SignInCta } from "@/components/auth/sign-in-cta";
 import { deleteProjectAction } from "../actions";
 import { SDG_CATEGORY_LABELS, type SDGCategory } from "@/types/enums";
 
@@ -166,6 +167,8 @@ export default async function ProjectDetailPage({
         overview={overviewContent}
         issues={issuesContent}
       />
+
+      {!citizen && <SignInCta />}
     </div>
   );
 }

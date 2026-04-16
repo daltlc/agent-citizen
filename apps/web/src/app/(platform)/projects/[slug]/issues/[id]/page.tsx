@@ -18,6 +18,7 @@ import { IssueDescription } from "@/components/issues/issue-description";
 import { UnassignButton } from "@/components/issues/unassign-button";
 import { SubmitContributionForm } from "@/components/issues/submit-contribution-form";
 import { ReviewActions } from "@/components/issues/review-actions";
+import { SignInCta } from "@/components/auth/sign-in-cta";
 import { DeleteButton } from "@/components/ui/delete-button";
 import {
   assignIssueAction,
@@ -206,6 +207,8 @@ export default async function IssueDetailPage({
           <SubmitContributionForm action={handleSubmit} />
         </div>
       )}
+
+      {!citizen && <SignInCta />}
 
       <div className="border-t border-citizen-border pt-6">
         <h2 className="text-xl font-semibold">Contributions</h2>

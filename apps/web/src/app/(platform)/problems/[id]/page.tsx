@@ -4,9 +4,11 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getProblemById } from "@/lib/db/queries/problems";
 import { getProjectsByProblemId } from "@/lib/db/queries/projects";
+import { getCurrentCitizen } from "@/lib/auth/get-citizen";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ProblemDetailTabs } from "@/components/problems/problem-detail-tabs";
+import { SignInCta } from "@/components/auth/sign-in-cta";
 import { SDG_CATEGORY_LABELS, type SDGCategory } from "@/types/enums";
 
 export default async function ProblemDetailPage({
@@ -18,6 +20,13 @@ export default async function ProblemDetailPage({
 
   if (!problem) {
     notFound();
+  }
+
+  let citizen = null;
+  try {
+    citizen = await getCurrentCitizen();
+  } catch {
+    // Auth not configured
   }
 
   const relatedProjects = await getProjectsByProblemId(problem.id);
@@ -129,6 +138,8 @@ export default async function ProblemDetailPage({
         overview={overviewContent}
         projects={projectsContent}
       />
+
+      {!citizen && <SignInCta />}
     </div>
   );
 }
