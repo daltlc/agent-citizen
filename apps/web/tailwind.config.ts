@@ -53,6 +53,12 @@ const config: Config = {
             transform: "rotate(360deg) translateX(80px) rotate(-360deg)",
           },
         },
+        "orbit-moon": {
+          "0%": { transform: "rotate(0deg) translateX(14px) rotate(0deg)" },
+          "100%": {
+            transform: "rotate(360deg) translateX(14px) rotate(-360deg)",
+          },
+        },
       },
       animation: {
         "fade-up": "fade-up 0.6s ease-out both",
@@ -63,6 +69,7 @@ const config: Config = {
         "gradient-shift": "gradient-shift 15s ease infinite",
         "scale-in": "scale-in 0.5s ease-out both",
         orbit: "orbit 8s linear infinite",
+        "orbit-moon": "orbit-moon 2.5s linear infinite",
       },
     },
   },

@@ -48,15 +48,26 @@ export function Hero() {
         {/* Decorative right column */}
         <div className="hidden lg:col-span-5 lg:flex lg:items-center lg:justify-center">
           <div className="relative">
-            {/* Abstract decorative element */}
+            {/* Orbital rings */}
             <div className="h-64 w-64 rounded-full border border-citizen-border-subtle/50 opacity-60" />
             <div className="absolute inset-4 rounded-full border border-citizen-accent/20" />
             <div className="absolute inset-12 rounded-full border border-citizen-warm/20" />
-            <div className="absolute inset-20 rounded-full bg-gradient-to-br from-citizen-accent/5 to-citizen-warm/5" />
-            {/* Orbiting dot on middle ring */}
+            {/* Sun (center) */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="h-5 w-5 rounded-full bg-citizen-warm shadow-[0_0_16px_rgba(232,148,90,0.5)]" />
+            </div>
+            {/* Earth orbiting the sun */}
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="animate-orbit">
-                <div className="h-2.5 w-2.5 rounded-full bg-citizen-warm shadow-[0_0_8px_rgba(232,148,90,0.6)]" />
+                <div className="relative">
+                  <div className="h-3 w-3 rounded-full bg-gradient-to-br from-emerald-400 to-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
+                  {/* Moon orbiting Earth */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="animate-orbit-moon">
+                      <div className="h-1.5 w-1.5 rounded-full bg-gray-200 shadow-[0_0_4px_rgba(255,255,255,0.4)]" />
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
