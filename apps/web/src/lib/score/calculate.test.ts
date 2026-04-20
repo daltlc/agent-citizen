@@ -13,7 +13,9 @@ const mockUpdateWhere = vi.fn();
 
 // Build a chainable object that supports any order of where/orderBy/innerJoin/limit
 function makeChainable(resolve?: unknown) {
-  const chain: Record<string, (...args: unknown[]) => Record<string, unknown>> = {};
+  // Parameters use any[] for contravariance — the chain includes a `then`
+  // method whose callback param is narrower than unknown.
+  const chain: Record<string, (...args: any[]) => unknown> = {};
   chain.innerJoin = (...args: unknown[]) => { mockInnerJoin(...args); return chain; };
   chain.where = (...args: unknown[]) => { mockWhere(...args); return chain; };
   chain.orderBy = (...args: unknown[]) => { mockOrderBy(...args); return chain; };
