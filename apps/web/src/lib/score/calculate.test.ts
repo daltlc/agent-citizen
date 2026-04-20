@@ -11,17 +11,23 @@ const mockUpdate = vi.fn();
 const mockSet = vi.fn();
 const mockUpdateWhere = vi.fn();
 
-// Build a chainable object that supports any order of where/orderBy/innerJoin/limit
-function makeChainable(resolve?: unknown) {
-  // Parameters use any[] for contravariance — the chain includes a `then`
-  // method whose callback param is narrower than unknown.
-  const chain: Record<string, (...args: any[]) => unknown> = {};
-  chain.innerJoin = (...args: unknown[]) => { mockInnerJoin(...args); return chain; };
-  chain.where = (...args: unknown[]) => { mockWhere(...args); return chain; };
-  chain.orderBy = (...args: unknown[]) => { mockOrderBy(...args); return chain; };
-  chain.limit = (...args: unknown[]) => { mockLimit(...args); return chain; };
-  // Make it thenable so await resolves to the mock value
-  chain.then = (onFulfilled: (v: unknown) => unknown) => Promise.resolve(resolve).then(onFulfilled);
+type MockChain = {
+  innerJoin: (...args: unknown[]) => MockChain;
+  where: (...args: unknown[]) => MockChain;
+  orderBy: (...args: unknown[]) => MockChain;
+  limit: (...args: unknown[]) => MockChain;
+  then: (onFulfilled: (v: unknown) => unknown) => Promise<unknown>;
+};
+
+// Build a chainable object that supports any order of where/orderBy/innerJoin/limit.
+// It is also thenable so `await select(...).from(...).where(...)` resolves.
+function makeChainable(resolve?: unknown): MockChain {
+  const chain = {} as MockChain;
+  chain.innerJoin = (...args) => { mockInnerJoin(...args); return chain; };
+  chain.where = (...args) => { mockWhere(...args); return chain; };
+  chain.orderBy = (...args) => { mockOrderBy(...args); return chain; };
+  chain.limit = (...args) => { mockLimit(...args); return chain; };
+  chain.then = (onFulfilled) => Promise.resolve(resolve).then(onFulfilled);
   return chain;
 }
 
