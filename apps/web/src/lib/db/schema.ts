@@ -142,7 +142,12 @@ export const apiKeys = pgTable(
     citizenId: uuid("citizen_id")
       .notNull()
       .references(() => citizens.id),
-    key: text("key").notNull(),
+    // SHA-256 hash of the raw key. The raw key is shown once at creation
+    // and never stored. Compromise of the DB cannot yield working keys.
+    keyHash: text("key_hash").notNull(),
+    // Last 4 characters of the raw key, shown in the UI so users can
+    // identify which key is which ("ck_...a1b2").
+    keyHint: text("key_hint").notNull(),
     name: text("name").notNull(),
     lastUsedAt: timestamp("last_used_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true })
@@ -150,7 +155,7 @@ export const apiKeys = pgTable(
       .notNull(),
   },
   (table) => [
-    uniqueIndex("api_keys_key_idx").on(table.key),
+    uniqueIndex("api_keys_key_hash_idx").on(table.keyHash),
     index("api_keys_citizen_id_idx").on(table.citizenId),
   ]
 );
